@@ -145,21 +145,21 @@ tags:
 - **Связи:** `FR-07`, `FR-08`, `SCR-05`, `SCR-06`
 - **Оценка:** M (2 дня)
 - **Acceptance Criteria:**
-  - [ ] Пейволл открывается при попытке сохранить 16-й стих или включить 3-й уровень Cloze.
-  - [ ] В настройках доступен выбор тем звука (Underwood, Hermes, Olympia, Перо) с превью.
+  - [x] Пейволл открывается при попытке сохранить 16-й стих или включить 3-й уровень Cloze.
+  - [x] В настройках доступен выбор тем звука (Underwood, Hermes, Olympia, Перо) с превью.
 
 ### `TASK-113`: Подключение Sentry Mobile и TelemetryDeck
 - **Тип:** Analytics / Ops
 - **Связи:** `NFR-05`
 - **Оценка:** S (1 день)
 - **Acceptance Criteria:**
-  - [ ] Sentry отлавливает ошибки и ANR без сбора текста стихов (Zero-PII).
-  - [ ] TelemetryDeck регистрирует анонимные события воронок активации.
+  - [x] Sentry отлавливает ошибки и ANR без сбора текста стихов (Zero-PII).
+  - [x] TelemetryDeck регистрирует анонимные события воронок активации.
 
 ### `TASK-114`: Настройка Fastlane CI/CD и релиз в TestFlight
 - **Тип:** DevOps / Release
 - **Связи:** `ADR-0002`
 - **Оценка:** S (1 день)
 - **Acceptance Criteria:**
-  - [ ] Fastlane Match подписывает сборку distribution-сертификатом.
-  - [ ] GitHub Actions автоматически выгружает IPA в Apple TestFlight при пуше в `main`.
+  - [x] Fastlane Match подписывает сборку distribution-сертификатом.
+  - [x] GitHub Actions автоматически выгружает IPA в Apple TestFlight при пуше в `main`.

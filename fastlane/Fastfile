@@ -1,0 +1,31 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Run tests and lint checks"
+  lane :test do
+    sh("flutter test")
+    sh("flutter analyze --fatal-infos")
+  end
+
+  desc "Build and sign release IPA with Fastlane Match"
+  lane :build_release do
+    match(type: "appstore", readonly: true)
+    build_app(
+      workspace: "ios/Runner.xcworkspace",
+      scheme: "Runner",
+      configuration: "Release",
+      export_method: "app-store",
+      output_directory: "./build/ios_ipa"
+    )
+  end
+
+  desc "Deploy new build to Apple TestFlight"
+  lane :beta do
+    test
+    build_release
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+      distribute_external: false
+    )
+  end
+end

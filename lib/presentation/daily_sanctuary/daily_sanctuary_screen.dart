@@ -11,6 +11,7 @@ import 'ghost_typing_widget.dart';
 import '../memory_practice/cloze_practice_screen.dart';
 import '../folio_book/folio_screen.dart';
 import '../story_studio/story_studio_screen.dart';
+import '../settings/settings_screen.dart';
 
 class DailySanctuaryScreen extends StatefulWidget {
   final PoemRepository repository;
@@ -104,21 +105,35 @@ class _DailySanctuaryScreenState extends State<DailySanctuaryScreen> {
       body: ParchmentBackground(
         child: Column(
           children: [
-            // Top App Bar: Navigation, Roman Date & Language Switch
+            // Top App Bar: Navigation, Roman Date & Settings
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.menu_book_outlined, color: VellumTheme.inkPrimary),
-                    tooltip: 'Мой Фолиант (Folio)',
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => FolioScreen(repository: widget.repository),
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.menu_book_outlined, color: VellumTheme.inkPrimary),
+                        tooltip: 'Мой Фолиант (Folio)',
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => FolioScreen(repository: widget.repository),
+                          ),
+                        ),
                       ),
-                    ),
+                      IconButton(
+                        icon: const Icon(Icons.settings_outlined, color: VellumTheme.inkPrimary, size: 20),
+                        tooltip: 'Настройки звука и ритуала',
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const SettingsScreen(),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   Column(
                     children: [
@@ -140,7 +155,6 @@ class _DailySanctuaryScreenState extends State<DailySanctuaryScreen> {
                   ),
                   Row(
                     children: [
-                      // Language group selector (RU/EN)
                       TextButton(
                         style: TextButton.styleFrom(
                           minimumSize: const Size(36, 32),
@@ -173,7 +187,6 @@ class _DailySanctuaryScreenState extends State<DailySanctuaryScreen> {
               ),
             ),
 
-            // Antique Gold Progress Indicator
             LinearProgressIndicator(
               value: progress,
               backgroundColor: VellumTheme.antiqueGoldMuted,
@@ -181,15 +194,14 @@ class _DailySanctuaryScreenState extends State<DailySanctuaryScreen> {
               minHeight: 2.5,
             ),
 
-            // Poem Metadata Header
             Padding(
-              padding: const EdgeInsets.only(top: 16, bottom: 8),
+              padding: const EdgeInsets.only(top: 14, bottom: 6),
               child: Column(
                 children: [
                   Text(poem.title, style: VellumTheme.poemTitleStyle, textAlign: TextAlign.center),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 3),
                   Text('${poem.author}, ${poem.year}', style: VellumTheme.poemAuthorStyle),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                     decoration: BoxDecoration(
@@ -210,7 +222,6 @@ class _DailySanctuaryScreenState extends State<DailySanctuaryScreen> {
               ),
             ),
 
-            // Kinetic Typing Area
             Expanded(
               child: GhostTypingWidget(
                 key: ValueKey('${poem.id}_$_selectedLanguage'),
@@ -220,7 +231,6 @@ class _DailySanctuaryScreenState extends State<DailySanctuaryScreen> {
               ),
             ),
 
-            // Bottom Bar: Stats Ribbon or Wax Seal Completion Modal
             if (_isCompleted) ...[
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 14),

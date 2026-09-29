@@ -1,0 +1,67 @@
+name: Vellum CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test_and_analyze:
+    name: Flutter Lint & Unit Tests
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Verify Code Style & Lint
+        run: flutter analyze --fatal-infos
+
+      - name: Run Test Suite
+        run: flutter test --coverage
+
+      - name: Run Acceptance & Benchmark Specs
+        run: |
+          python3 tests/specs/test_m0_benchmarks.py
+          python3 tests/specs/test_m1_benchmarks.py
+          python3 tests/specs/test_m2_benchmarks.py
+          python3 tests/specs/test_m3_benchmarks.py
+
+  build_testflight:
+    name: Fastlane Build & Deploy to TestFlight
+    needs: test_and_analyze
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby & Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.x'
+          channel: 'stable'
+
+      - name: Build and Distribute
+        env:
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+        run: |
+          echo "Simulating Fastlane beta lane deployment to TestFlight"

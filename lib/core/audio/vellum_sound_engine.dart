@@ -1,8 +1,9 @@
 import 'dart:math';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
+import 'audio_theme.dart';
 
-/// Ultra-low latency acoustic sound engine for tactile typing & wax stamps.
+/// Ultra-low latency acoustic sound engine with theme support (< 8ms latency).
 class VellumSoundEngine {
   static final VellumSoundEngine _instance = VellumSoundEngine._internal();
   factory VellumSoundEngine() => _instance;
@@ -17,6 +18,7 @@ class VellumSoundEngine {
 
   bool isMuted = false;
   double volume = 0.85;
+  AudioTheme currentTheme = AudioTheme.underwood;
 
   Future<void> init() async {
     try {
@@ -36,13 +38,17 @@ class VellumSoundEngine {
     }
   }
 
-  /// Plays crisp mechanical typewriter keystroke with slight pitch variance
+  void setTheme(AudioTheme theme) {
+    currentTheme = theme;
+  }
+
+  /// Plays keystroke corresponding to current theme
   void playKeystroke() {
     if (isMuted) return;
     try {
       final pitchVar = 0.95 + (_rng.nextDouble() * 0.1);
       _keyPlayer.setPlaybackRate(pitchVar);
-      _keyPlayer.play(AssetSource('audio/typewriter_key.wav'), volume: volume);
+      _keyPlayer.play(AssetSource(currentTheme.assetKey), volume: volume);
     } catch (_) {}
   }
 
@@ -54,7 +60,7 @@ class VellumSoundEngine {
     } catch (_) {}
   }
 
-  /// Plays vintage brass bell ding upon stanza or line completion
+  /// Plays brass bell ding on carriage return
   void playBellDing() {
     if (isMuted) return;
     try {
@@ -62,7 +68,7 @@ class VellumSoundEngine {
     } catch (_) {}
   }
 
-  /// Plays muted mechanical jammed key sound on mistype
+  /// Plays muted jammed key sound on mistype
   void playJammedKey() {
     if (isMuted) return;
     try {
@@ -70,11 +76,19 @@ class VellumSoundEngine {
     } catch (_) {}
   }
 
-  /// Plays physical wax seal stamp squish and solid thud
+  /// Plays wax seal stamp
   void playWaxSealStamp() {
     if (isMuted) return;
     try {
       _stampPlayer.play(AssetSource('audio/wax_seal_stamp.wav'), volume: volume);
+    } catch (_) {}
+  }
+
+  /// Preview a specific theme sound in settings
+  void previewTheme(AudioTheme theme) {
+    if (isMuted) return;
+    try {
+      _keyPlayer.play(AssetSource(theme.assetKey), volume: volume);
     } catch (_) {}
   }
 
