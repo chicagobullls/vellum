@@ -25,30 +25,30 @@ tags:
 - **Связи:** `ADR-0002`
 - **Оценка:** S (1 день)
 - **Acceptance Criteria:**
-  - [ ] Создан проект на Flutter 3.24+ с Impeller Engine.
-  - [ ] Настроена структура каталогов: `core/`, `data/`, `domain/`, `presentation/`.
-  - [ ] Подключен Riverpod 2.x для управления состоянием.
-  - [ ] Настроен строгий `analysis_options.yaml` (fatal infos/warnings).
+  - [x] Создан проект на Flutter 3.24+ с Impeller Engine.
+  - [x] Настроена структура каталогов: `core/`, `data/`, `domain/`, `presentation/`.
+  - [x] Подключен Riverpod 2.x для управления состоянием.
+  - [x] Настроен строгий `analysis_options.yaml` (fatal infos/warnings).
 
 ### `TASK-102`: Схема Isar Database и импорт базы 240+ стихов
 - **Тип:** Data / Storage
 - **Связи:** `FR-01`, `ADR-0002`
 - **Оценка:** M (2 дня)
 - **Acceptance Criteria:**
-  - [ ] Описаны коллекции `Poem`, `UserFolioEntry`, `TypingSession`, `UserSettings`.
-  - [ ] Сгенерирован код адаптеров через `build_runner`.
-  - [ ] Реализован парсер встроенного бандла `assets/data/curated_poems.json`.
-  - [ ] Написан Unit-тест: база успешно инициализируется за < 45мс.
+  - [x] Описаны коллекции `Poem`, `UserFolioEntry`, `TypingSession`, `UserSettings`.
+  - [x] Сгенерирован код адаптеров через `build_runner`.
+  - [x] Реализован парсер встроенного бандла `assets/data/curated_poems.json`.
+  - [x] Написан Unit-тест: база успешно инициализируется за < 45мс.
 
 ### `TASK-103`: Низколатентный аудио-модуль и Taptic Engine (< 8мс)
 - **Тип:** Audio / Haptics
 - **Связи:** `FR-03`, `ADR-0003`
 - **Оценка:** M (2 дня)
 - **Acceptance Criteria:**
-  - [ ] Настроен `SoundPool` / `AVAudioPlayer` для воспроизведения несжатых PCM WAV кликов из памяти.
-  - [ ] Реализован нативный MethodChannel вызова `CoreHaptics` transient-импульсов.
-  - [ ] Совокупная задержка от касания до щелчка замерена и составляет `<= 8 мс`.
-  - [ ] Добавлен звук звонка каретки (carriage bell).
+  - [x] Настроен `SoundPool` / `AVAudioPlayer` для воспроизведения несжатых PCM WAV кликов из памяти.
+  - [x] Реализован нативный MethodChannel вызова `CoreHaptics` transient-импульсов.
+  - [x] Совокупная задержка от касания до щелчка замерена и составляет `<= 8 мс`.
+  - [x] Добавлен звук звонка каретки (carriage bell).
 
 ---
 
