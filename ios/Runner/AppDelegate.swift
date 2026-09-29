@@ -3,7 +3,7 @@ import Flutter
 import CoreHaptics
 
 @main
-@objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   private var hapticEngine: CHHapticEngine?
   private let hapticChannelName = "com.vellum.haptics/core"
 
@@ -11,8 +11,16 @@ import CoreHaptics
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
-    let hapticChannel = FlutterMethodChannel(name: hapticChannelName, binaryMessenger: controller.binaryMessenger)
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
+    GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+
+    let hapticChannel = FlutterMethodChannel(
+      name: hapticChannelName,
+      binaryMessenger: engineBridge.applicationRegistrar.messenger()
+    )
 
     // Pre-warm CoreHaptics Engine
     setupCoreHaptics()
@@ -35,9 +43,6 @@ import CoreHaptics
         result(FlutterMethodNotImplemented)
       }
     })
-
-    GeneratedPluginRegistrant.register(with: self)
-    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
   private func setupCoreHaptics() {
