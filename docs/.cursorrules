@@ -1,0 +1,18 @@
+# Cursor Rules for vellum (AIRAM SDD)
+
+# 1. Spec-Driven Development
+- Always read docs before generating code:
+  - Backlog tasks: `docs/05-backlog/02-epics-and-tasks.md`
+  - Requirements & Acceptance Criteria: `docs/02-prd/01-product-requirements.md`
+  - Architecture & Tech Stack: `docs/03-tech-stack/01-architecture-overview.md`
+  - ADRs: `docs/03-tech-stack/adr/`
+- Every feature must strictly fulfill the Acceptance Criteria in the PRD.
+- Do not introduce arbitrary new libraries without checking the ADRs.
+
+# 2. Proactive Improvement
+- If you notice a cleaner, more secure, faster, or modern architectural option:
+  PROACTIVELY propose it to the user with pros/cons before proceeding.
+
+# 3. Living Documentation
+- When completing a task, check it off `[x]` in `docs/05-backlog/02-epics-and-tasks.md`.
+- Keep schema/API changes synced with documentation in the same commit.

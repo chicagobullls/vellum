@@ -1,0 +1,149 @@
+{
+  "nodes": [
+    {
+      "id": "header-card",
+      "type": "text",
+      "text": "# 🗺 vellum — AIRAM Visual Canvas\n\nИнтерактивная карта проектной документации и архитектуры.\n- **Статус:** См. [[STATUS|Трекер готовности и гейтов]]\n- **Индекс:** [[00-INDEX|Главный MOC каталог проекта]]\n- **Кодинг-инструкции:** [[AGENTS|AGENTS.md для AI-ассистентов]]",
+      "x": 0,
+      "y": -220,
+      "width": 1120,
+      "height": 160,
+      "color": "5"
+    },
+    {
+      "id": "node-p0",
+      "type": "text",
+      "text": "## 🚀 Фаза 0: Discovery & Видение\n\n- [[00-idea-roast-and-stress-test|🔥 Прожарка и стресс-тест идеи]]\n- [[00-naming-lab|🏷 Нейминг-лаборатория]]\n- [[01-vision-interview|🎤 Стенограмма интервью]]\n- [[02-stakeholders-and-goals|🎯 Бизнес-цели и стейкхолдеры]]\n- [[03-pitch-deck|🎯 Pitch Deck слайды]]\n- [[04-executive-one-pager|📄 Executive One-Pager]]\n\n> **Результат:** Закалена идея, выбрано имя бренда, зафиксирован Elevator Pitch, цели и готова презентация для инвесторов.",
+      "x": 0,
+      "y": 0,
+      "width": 320,
+      "height": 380,
+      "color": "5"
+    },
+    {
+      "id": "node-p1",
+      "type": "text",
+      "text": "## 🔍 Фаза 1: Рынок и Риски\n\n- [[01-market-and-competitors|📊 Анализ конкурентов и UVP]]\n- [[02-risks-and-feasibility|⚠️ Матрица рисков]]\n\n> **Результат:** 3 фактора дифференциации продукта и превентивный план снижения рисков.",
+      "x": 380,
+      "y": 0,
+      "width": 320,
+      "height": 340,
+      "color": "6"
+    },
+    {
+      "id": "node-p2",
+      "type": "text",
+      "text": "## 📐 Фаза 2: PRD & Скоуп\n\n- [[01-product-requirements|📋 Спецификация требований]]\n- [[02-user-personas-and-jtbd|👤 Персоны и Jobs-to-be-Done]]\n- [[03-traceability-matrix|🔗 Матрица трассируемости]]\n- [[04-analytics-and-tracking-plan|📊 Tracking Plan аналитики]]\n- [[05-pricing-and-feature-gating|💳 Монетизация & Feature Gating]]\n- [[06-ai-evals-and-prompts|🎯 AI Evals & Benchmarks]]\n\n> **Результат:** Скоуп ядра MVP (Must-have требования) со сквозными связями.",
+      "x": 760,
+      "y": 0,
+      "width": 320,
+      "height": 340,
+      "color": "4"
+    },
+    {
+      "id": "node-p3",
+      "type": "text",
+      "text": "## 🏗 Фаза 3: Архитектура и Стек\n\n- [[01-architecture-overview|🏛 C4 Диаграммы и компоненты]]\n- [[02-infrastructure-and-costs|💰 Смета и расчет токенов]]\n- [[03-security-and-compliance|🛡 Безопасность и PII]]\n- [[04-data-models-and-schema|🗄 Схема БД, ERD и Prisma]]\n- [[05-api-contracts|🔌 API Контракты OpenAPI 3.1]]\n- [[06-deployment-and-devops|🚀 CI/CD & Local Dev Runbook]]\n- [[07-observability-and-ops|📡 Observability & Sentry]]\n- [[0001-record-architecture-decisions|🏛 Каталог ADR]]\n\n> **Результат:** Согласованный стек, API контракты и бюджет.",
+      "x": 1140,
+      "y": 0,
+      "width": 340,
+      "height": 340,
+      "color": "2"
+    },
+    {
+      "id": "node-p4",
+      "type": "text",
+      "text": "## 🎨 Фаза 4: UX/UI Концепция\n\n- [[01-user-flows|🗺 Сценарии и экраны SCR-XX]]\n- [[02-design-system-and-tokens|🎨 Токены дизайн-системы]]\n- [[03-ui-generator-prompts|💻 Промпты для v0 / Lovable]]\n\n> **Результат:** Готовые копируемые промпты интерфейсов и навигация.",
+      "x": 1540,
+      "y": 0,
+      "width": 320,
+      "height": 340,
+      "color": "1"
+    },
+    {
+      "id": "node-p5",
+      "type": "text",
+      "text": "## 🚀 Фаза 5: Бэклог и Дорожная карта\n\n- [[01-roadmap-and-milestones|🗺 Майлстоуны M0..M3]]\n- [[02-epics-and-tasks|📋 Задачи TASK-XXX с DoD]]\n- [[03-qa-and-test-strategy|🧪 QA & Playwright Strategy]]\n- [[DEVELOPMENT|🛠 Day-1 Dev Guide]]\n\n> **Результат:** Полная декомпозиция работ, проект переведен в `READY_FOR_DEV`.",
+      "x": 1920,
+      "y": 0,
+      "width": 320,
+      "height": 340,
+      "color": "4"
+    },
+    {
+      "id": "node-sdd",
+      "type": "text",
+      "text": "## ⚡ Spec-Driven Development (Переход к коду)\n\nВ репозиторий проекта экспортируются:\n1. Документация в папку `docs/`\n2. Корневой файл `AGENTS.md` (инструкция для кодинг-агентов)\n3. Скелеты исполняемых авто-тестов в `tests/specs/` (`test_fr_*.py` / `fr_*.spec.ts`)\n\nКодинг-агенты запускают тесты, видят падающие критерии приемки и пишут код под них!",
+      "x": 760,
+      "y": 400,
+      "width": 720,
+      "height": 220,
+      "color": "3"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-h-p0",
+      "fromNode": "header-card",
+      "fromSide": "bottom",
+      "toNode": "node-p0",
+      "toSide": "top"
+    },
+    {
+      "id": "edge-p0-p1",
+      "fromNode": "node-p0",
+      "fromSide": "right",
+      "toNode": "node-p1",
+      "toSide": "left",
+      "label": "Gate 0 (Цели утверждены)"
+    },
+    {
+      "id": "edge-p1-p2",
+      "fromNode": "node-p1",
+      "fromSide": "right",
+      "toNode": "node-p2",
+      "toSide": "left",
+      "label": "Gate 1 (Рынок проверен)"
+    },
+    {
+      "id": "edge-p2-p3",
+      "fromNode": "node-p2",
+      "fromSide": "right",
+      "toNode": "node-p3",
+      "toSide": "left",
+      "label": "Gate 2 (Скоуп согласован)"
+    },
+    {
+      "id": "edge-p3-p4",
+      "fromNode": "node-p3",
+      "fromSide": "right",
+      "toNode": "node-p4",
+      "toSide": "left",
+      "label": "Gate 3 (Архитектура выбрана)"
+    },
+    {
+      "id": "edge-p4-p5",
+      "fromNode": "node-p4",
+      "fromSide": "right",
+      "toNode": "node-p5",
+      "toSide": "left",
+      "label": "Gate 4 (UI концепция принята)"
+    },
+    {
+      "id": "edge-p5-sdd",
+      "fromNode": "node-p5",
+      "fromSide": "bottom",
+      "toNode": "node-sdd",
+      "toSide": "right",
+      "label": "Gate 5 (Готово к разработке)"
+    },
+    {
+      "id": "edge-p2-sdd",
+      "fromNode": "node-p2",
+      "fromSide": "bottom",
+      "toNode": "node-sdd",
+      "toSide": "left",
+      "label": "Генерация тестов из PRD"
+    }
+  ]
+}

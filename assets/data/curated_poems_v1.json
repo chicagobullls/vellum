@@ -1,0 +1,242 @@
+[
+  {
+    "id": "poem_001",
+    "title": "Я вас любил",
+    "author": "Александр Пушкин",
+    "year": 1829,
+    "language": "ru",
+    "meter": "Ямб (5-стопный)",
+    "difficulty": 1,
+    "tags": [
+      "Любовь",
+      "Классика",
+      "Элегия"
+    ],
+    "is_public_domain": true,
+    "original_text": "Я вас любил: любовь еще, быть может,\nВ душе моей угасла не совсем;\nНо пусть она вас больше не тревожит;\nЯ не хочу печалить вас ничем.\n\nЯ вас любил безмолвно, безнадежно,\nТо робостью, то ревностью томим;\nЯ вас любил так искренно, так нежно,\nКак дай вам бог любимой быть другим.",
+    "stanzas": [
+      [
+        "Я вас любил: любовь еще, быть может,",
+        "В душе моей угасла не совсем;",
+        "Но пусть она вас больше не тревожит;",
+        "Я не хочу печалить вас ничем."
+      ],
+      [
+        "Я вас любил безмолвно, безнадежно,",
+        "То робостью, то ревностью томим;",
+        "Я вас любил так искренно, так нежно,",
+        "Как дай вам бог любимой быть другим."
+      ]
+    ]
+  },
+  {
+    "id": "poem_002",
+    "title": "Парус",
+    "author": "Михаил Лермонтов",
+    "year": 1832,
+    "language": "ru",
+    "meter": "Ямб (4-стопный)",
+    "difficulty": 1,
+    "tags": [
+      "Романтизм",
+      "Море",
+      "Свобода"
+    ],
+    "is_public_domain": true,
+    "original_text": "Белеет парус одинокой\nВ тумане моря голубом!.. \nЧто ищет он в стране далекой?\nЧто кинул он в краю родном?..\n\nИграют волны — ветер свищет,\nИ мачта гнется и скрыпит…\nУвы! он счастия не ищет\nИ не от счастия бежит!\n\nПод ним струя светлей лазури,\nНад ним луч солнца золотой…\nА он, мятежный, просит бури,\nКак будто в бурях есть покой!",
+    "stanzas": [
+      [
+        "Белеет парус одинокой",
+        "В тумане моря голубом!..",
+        "Что ищет он в стране далекой?",
+        "Что кинул он в краю родном?.."
+      ],
+      [
+        "Играют волны — ветер свищет,",
+        "И мачта гнется и скрыпит…",
+        "Увы! он счастия не ищет",
+        "И не от счастия бежит!"
+      ],
+      [
+        "Под ним струя светлей лазури,",
+        "Над ним луч солнца золотой…",
+        "А он, мятежный, просит бури,",
+        "Как будто в бурях есть покой!"
+      ]
+    ]
+  },
+  {
+    "id": "poem_003",
+    "title": "Silentium!",
+    "author": "Федор Тютчев",
+    "year": 1830,
+    "language": "ru",
+    "meter": "Ямб (4-стопный)",
+    "difficulty": 2,
+    "tags": [
+      "Философия",
+      "Тишина",
+      "Душа"
+    ],
+    "is_public_domain": true,
+    "original_text": "Молчи, скрывайся и таи\nИ чувства и мечты свои —\nПускай в душевной глубине\nВстают и заходят оне\nБезмолвно, как звезды в ночи, —\nЛюбуйся ими — и молчи.\n\nКак сердцу высказать себя?\nДругому как понять тебя?\nПоймет ли он, чем ты живешь?\nМысль изреченная есть ложь.\nВзрывая, возмутишь ключи, —\nПитайся ими — и молчи.",
+    "stanzas": [
+      [
+        "Молчи, скрывайся и таи",
+        "И чувства и мечты свои —",
+        "Пускай в душевной глубине",
+        "Встают и заходят оне",
+        "Безмолвно, как звезды в ночи, —",
+        "Любуйся ими — и молчи."
+      ],
+      [
+        "Как сердцу высказать себя?",
+        "Другому как понять тебя?",
+        "Поймет ли он, чем ты живешь?",
+        "Мысль изреченная есть ложь.",
+        "Взрывая, возмутишь ключи, —",
+        "Питайся ими — и молчи."
+      ]
+    ]
+  },
+  {
+    "id": "poem_004",
+    "title": "Ночь, улица, фонарь, аптека",
+    "author": "Александр Блок",
+    "year": 1912,
+    "language": "ru",
+    "meter": "Ямб (4-стопный)",
+    "difficulty": 1,
+    "tags": [
+      "Серебряный век",
+      "Меланхолия",
+      "Петербург"
+    ],
+    "is_public_domain": true,
+    "original_text": "Ночь, улица, фонарь, аптека,\nБессмысленный и тусклый свет.\nЖиви еще хоть четверть века —\nВсе будет так. Исхода нет.\n\nУмрешь — начнешь опять сначала\nИ повторится все, как встарь:\nНочь, ледяная рябь канала,\nАптека, улица, фонарь.",
+    "stanzas": [
+      [
+        "Ночь, улица, фонарь, аптека,",
+        "Бессмысленный и тусклый свет.",
+        "Живи еще хоть четверть века —",
+        "Все будет так. Исхода нет."
+      ],
+      [
+        "Умрешь — начнешь опять сначала",
+        "И повторится все, как встарь:",
+        "Ночь, ледяная рябь канала,",
+        "Аптека, улица, фонарь."
+      ]
+    ]
+  },
+  {
+    "id": "poem_005",
+    "title": "Shall I compare thee to a summer’s day? (Sonnet 18)",
+    "author": "William Shakespeare",
+    "year": 1609,
+    "language": "en",
+    "meter": "Iambic pentameter",
+    "difficulty": 2,
+    "tags": [
+      "Love",
+      "Eternity",
+      "Sonnet"
+    ],
+    "is_public_domain": true,
+    "original_text": "Shall I compare thee to a summer’s day?\nThou art more lovely and more temperate:\nRough winds do shake the darling buds of May,\nAnd summer’s lease hath all too short a date;\n\nSometime too hot the eye of heaven shines,\nAnd often is his gold complexion dimm’d;\nAnd every fair from fair sometime declines,\nBy chance or nature’s changing course untrimm’d;\n\nBut thy eternal summer shall not fade,\nNor lose possession of that fair thou ow’st;\nNor shall Death brag thou wander’st in his shade,\nWhen in eternal lines to time thou grow’st:\n\nSo long as men can breathe or eyes can see,\nSo long lives this, and this gives life to thee.",
+    "stanzas": [
+      [
+        "Shall I compare thee to a summer’s day?",
+        "Thou art more lovely and more temperate:",
+        "Rough winds do shake the darling buds of May,",
+        "And summer’s lease hath all too short a date;"
+      ],
+      [
+        "Sometime too hot the eye of heaven shines,",
+        "And often is his gold complexion dimm’d;",
+        "And every fair from fair sometime declines,",
+        "By chance or nature’s changing course untrimm’d;"
+      ],
+      [
+        "But thy eternal summer shall not fade,",
+        "Nor lose possession of that fair thou ow’st;",
+        "Nor shall Death brag thou wander’st in his shade,",
+        "When in eternal lines to time thou grow’st:"
+      ],
+      [
+        "So long as men can breathe or eyes can see,",
+        "So long lives this, and this gives life to thee."
+      ]
+    ]
+  },
+  {
+    "id": "poem_006",
+    "title": "Hope is the thing with feathers",
+    "author": "Emily Dickinson",
+    "year": 1861,
+    "language": "en",
+    "meter": "Common meter",
+    "difficulty": 1,
+    "tags": [
+      "Hope",
+      "Soul",
+      "Nature"
+    ],
+    "is_public_domain": true,
+    "original_text": "“Hope” is the thing with feathers -\nThat perches in the soul -\nAnd sings the tune without the words -\nAnd never stops - at all -\n\nAnd sweetest - in the Gale - is heard -\nAnd sore must be the storm -\nThat could abash the little Bird\nThat kept so many warm -\n\nI’ve heard it in the chillest land -\nAnd on the strangest Sea -\nYet - never - in Extremity,\nIt asked a crumb - of me.",
+    "stanzas": [
+      [
+        "“Hope” is the thing with feathers -",
+        "That perches in the soul -",
+        "And sings the tune without the words -",
+        "And never stops - at all -"
+      ],
+      [
+        "And sweetest - in the Gale - is heard -",
+        "And sore must be the storm -",
+        "That could abash the little Bird",
+        "That kept so many warm -"
+      ],
+      [
+        "I’ve heard it in the chillest land -",
+        "And on the strangest Sea -",
+        "Yet - never - in Extremity,",
+        "It asked a crumb - of me."
+      ]
+    ]
+  },
+  {
+    "id": "poem_007",
+    "title": "She Walks in Beauty",
+    "author": "Lord Byron",
+    "year": 1814,
+    "language": "en",
+    "meter": "Iambic tetrameter",
+    "difficulty": 2,
+    "tags": [
+      "Beauty",
+      "Harmony",
+      "Night"
+    ],
+    "is_public_domain": true,
+    "original_text": "She walks in beauty, like the night\nOf cloudless climes and starry skies;\nAnd all that’s best of dark and bright\nMeet in her aspect and her eyes;\nThus mellowed to that tender light\nWhich heaven to gaudy day denies.\n\nOne shade the more, one ray the less,\nHad half impaired the nameless grace\nWhich waves in every raven tress,\nOr softly lightens o’er her face;\nWhere thoughts serenely sweet express,\nHow pure, how dear their dwelling-place.",
+    "stanzas": [
+      [
+        "She walks in beauty, like the night",
+        "Of cloudless climes and starry skies;",
+        "And all that’s best of dark and bright",
+        "Meet in her aspect and her eyes;",
+        "Thus mellowed to that tender light",
+        "Which heaven to gaudy day denies."
+      ],
+      [
+        "One shade the more, one ray the less,",
+        "Had half impaired the nameless grace",
+        "Which waves in every raven tress,",
+        "Or softly lightens o’er her face;",
+        "Where thoughts serenely sweet express,",
+        "How pure, how dear their dwelling-place."
+      ]
+    ]
+  }
+]
