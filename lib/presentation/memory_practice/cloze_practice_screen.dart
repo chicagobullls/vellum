@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../core/audio/vellum_sound_engine.dart';
+import '../../core/billing/vellum_billing_service.dart';
 import '../../core/haptics/vellum_haptic_engine.dart';
 import '../../core/theme/vellum_theme.dart';
 import '../../core/utils/roman_numerals.dart';
@@ -10,6 +11,7 @@ import '../../data/repositories/poem_repository.dart';
 import '../../domain/algorithms/cloze_mask_generator.dart';
 import '../widgets/parchment_background.dart';
 import '../widgets/wax_seal_widget.dart';
+import '../paywall/vellum_pro_dialog.dart';
 
 class ClozePracticeScreen extends StatefulWidget {
   final Poem poem;
@@ -27,6 +29,7 @@ class ClozePracticeScreen extends StatefulWidget {
 
 class _ClozePracticeScreenState extends State<ClozePracticeScreen> {
   final VellumSoundEngine _sound = VellumSoundEngine();
+  final VellumBillingService _billing = VellumBillingService();
   final FocusNode _focusNode = FocusNode();
   final TextEditingController _textController = TextEditingController();
 
@@ -43,6 +46,7 @@ class _ClozePracticeScreenState extends State<ClozePracticeScreen> {
   void initState() {
     super.initState();
     _sound.init();
+    _billing.init();
     _regenerateMask();
   }
 
@@ -60,7 +64,30 @@ class _ClozePracticeScreenState extends State<ClozePracticeScreen> {
     });
   }
 
-  /// Feather hint button: reveals current line for exactly 2 seconds
+  void _onLevelSelected(int lvl) {
+    if (!_billing.isClozeLevelUnlocked(lvl)) {
+      showDialog(
+        context: context,
+        builder: (_) => const VellumProDialog(
+          triggerReason: 'Уровни заучивания Cloze III и IV доступны в Vellum Pro',
+        ),
+      ).then((_) {
+        if (_billing.isPro) {
+          setState(() {
+            _selectedLevel = lvl;
+            _regenerateMask();
+          });
+        }
+      });
+      return;
+    }
+
+    setState(() {
+      _selectedLevel = lvl;
+      _regenerateMask();
+    });
+  }
+
   void _triggerFeatherHint() {
     if (_isCompleted || _isHintActive) return;
 
@@ -96,7 +123,6 @@ class _ClozePracticeScreenState extends State<ClozePracticeScreen> {
 
       setState(() {
         _charIndex++;
-        // Auto skip spaces/newlines
         while (_charIndex < original.length &&
             (original[_charIndex] == '\n' || original[_charIndex] == ' ')) {
           if (original[_charIndex] == '\n') {
@@ -239,7 +265,6 @@ class _ClozePracticeScreenState extends State<ClozePracticeScreen> {
         title: Text('ТРЕНИРОВКА ПАМЯТИ', style: VellumTheme.headerDateStyle),
         centerTitle: true,
         actions: [
-          // Feather hint button («Перо»)
           IconButton(
             icon: Icon(
               Icons.edit_note,
@@ -258,33 +283,37 @@ class _ClozePracticeScreenState extends State<ClozePracticeScreen> {
       body: ParchmentBackground(
         child: Column(
           children: [
-            // Roman Numeral Level Selector (I..IV)
+            // Roman Numeral Level Selector (I..IV) with Pro Badge on III & IV
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [1, 2, 3, 4].map((lvl) {
                   final isSelected = _selectedLevel == lvl;
+                  final isLocked = !_billing.isClozeLevelUnlocked(lvl);
+
                   return ChoiceChip(
-                    label: Text(
-                      '${RomanNumerals.toRoman(lvl)}: ${_getLevelTitle(lvl)}',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                        color: isSelected ? VellumTheme.parchmentLight : VellumTheme.inkPrimary,
-                      ),
+                    label: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '${RomanNumerals.toRoman(lvl)}: ${_getLevelTitle(lvl)}',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            color: isSelected ? VellumTheme.parchmentLight : VellumTheme.inkPrimary,
+                          ),
+                        ),
+                        if (isLocked) ...[
+                          const SizedBox(width: 4),
+                          const Icon(Icons.lock, size: 10, color: VellumTheme.antiqueGold),
+                        ],
+                      ],
                     ),
                     selected: isSelected,
                     selectedColor: VellumTheme.inkPrimary,
                     backgroundColor: VellumTheme.parchmentSurface,
-                    onSelected: (val) {
-                      if (val) {
-                        setState(() {
-                          _selectedLevel = lvl;
-                          _regenerateMask();
-                        });
-                      }
-                    },
+                    onSelected: (_) => _onLevelSelected(lvl),
                   );
                 }).toList(),
               ),
@@ -298,7 +327,6 @@ class _ClozePracticeScreenState extends State<ClozePracticeScreen> {
               minHeight: 2.0,
             ),
 
-            // Hint banner when feather is active
             if (_isHintActive)
               Container(
                 width: double.infinity,
@@ -317,7 +345,6 @@ class _ClozePracticeScreenState extends State<ClozePracticeScreen> {
                 ),
               ),
 
-            // Interactive Masked Verse Area
             Expanded(
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
@@ -331,7 +358,6 @@ class _ClozePracticeScreenState extends State<ClozePracticeScreen> {
                       Text(widget.poem.author, style: VellumTheme.poemAuthorStyle),
                       const SizedBox(height: 28),
 
-                      // Masked Text with dotted underlines
                       _buildMaskedDisplay(),
 
                       const SizedBox(height: 36),
@@ -360,7 +386,6 @@ class _ClozePracticeScreenState extends State<ClozePracticeScreen> {
               ),
             ),
 
-            // Hidden text input field
             Offstage(
               offstage: true,
               child: TextField(
@@ -406,7 +431,6 @@ class _ClozePracticeScreenState extends State<ClozePracticeScreen> {
       if (isTyped) {
         displayChar = original[i];
       } else if (_isHintActive) {
-        // Feather hint reveals actual character
         displayChar = original[i];
       } else if (maskedChar != null) {
         displayChar = maskedChar.displayGlyph;

@@ -114,18 +114,18 @@ tags:
 - **Связи:** `FR-05`, `SCR-03`
 - **Оценка:** M (2 дня)
 - **Acceptance Criteria:**
-  - [ ] Карточки стихов в стиле pressed bookplates с золотыми корешками.
-  - [ ] Отображение даты заучивания, точности и статуса сургучной печати.
-  - [ ] Жесткий лимит до 15 стихов для пользователей Free-тарифа.
+  - [x] Карточки стихов в стиле pressed bookplates с золотыми корешками.
+  - [x] Отображение даты заучивания, точности и статуса сургучной печати.
+  - [x] Жесткий лимит до 15 стихов для пользователей Free-тарифа.
 
 ### `TASK-110`: Генератор открыток Story Card Studio `SCR-04`
 - **Тип:** Graphics / Export
 - **Связи:** `FR-06`, `SCR-04`
 - **Оценка:** M (2 дня)
 - **Acceptance Criteria:**
-  - [ ] Оффскрин-рендеринг PNG 9:16 (1080x1920) и 1:1 (1080x1080) через `RenderRepaintBoundary`.
-  - [ ] Переключение фактуры (Parchment Light vs Dark Academia Charcoal).
-  - [ ] Нативный системный диалог iOS Share Sheet.
+  - [x] Оффскрин-рендеринг PNG 9:16 (1080x1920) и 1:1 (1080x1080) через `RenderRepaintBoundary`.
+  - [x] Переключение фактуры (Parchment Light vs Dark Academia Charcoal).
+  - [x] Нативный системный диалог iOS Share Sheet.
 
 ---
 
@@ -136,9 +136,9 @@ tags:
 - **Связи:** `FR-07`, `ADR-0001`
 - **Оценка:** M (2 дня)
 - **Acceptance Criteria:**
-  - [ ] Поддержка 3 продуктов: `pro.monthly`, `pro.annual`, `patron.lifetime`.
-  - [ ] Статус подписки кэшируется в `flutter_secure_storage` (iOS Keychain).
-  - [ ] Кнопка «Restore Purchases» восстанавливает активные покупки.
+  - [x] Поддержка 3 продуктов: `pro.monthly`, `pro.annual`, `patron.lifetime`.
+  - [x] Статус подписки кэшируется в `flutter_secure_storage` (iOS Keychain).
+  - [x] Кнопка «Restore Purchases» восстанавливает активные покупки.
 
 ### `TASK-112`: Пейволл-экран `SCR-05` и Настройки `SCR-06`
 - **Тип:** UI / Presentation
