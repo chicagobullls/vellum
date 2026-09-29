@@ -15,7 +15,6 @@ class VellumHapticEngine {
         'sharpness': sharpness,
       });
     } catch (_) {
-      // Fallback to standard Flutter haptic feedback
       HapticFeedback.selectionClick();
     }
   }
@@ -25,7 +24,7 @@ class VellumHapticEngine {
     if (!enabled) return;
     try {
       await _channel.invokeMethod('triggerKeyTap', {
-        'intensity': 0.8,
+        'intensity': 0.85,
         'sharpness': 0.6,
       });
     } catch (_) {
@@ -43,13 +42,15 @@ class VellumHapticEngine {
     }
   }
 
-  /// Error vibration
-  static Future<void> mistake() async {
+  /// Double micro-vibration on typo/mistake
+  static Future<void> doubleMistakePulse() async {
     if (!enabled) return;
     try {
       await _channel.invokeMethod('triggerErrorShake');
     } catch (_) {
-      HapticFeedback.vibrate();
+      HapticFeedback.selectionClick();
+      await Future.delayed(const Duration(milliseconds: 40));
+      HapticFeedback.selectionClick();
     }
   }
 }

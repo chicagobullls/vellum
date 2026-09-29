@@ -19,7 +19,6 @@
       --antique-gold-glow: rgba(194, 155, 56, 0.2);
       --wax-crimson: #842D2D;
       --wax-glow: rgba(132, 45, 45, 0.35);
-      --candlelight: rgba(255, 230, 180, 0.08);
       --shadow-soft: 0 10px 30px rgba(0,0,0,0.06);
       --shadow-deep: 0 20px 50px rgba(26, 24, 22, 0.12);
     }
@@ -58,7 +57,6 @@
       position: relative;
     }
 
-    /* Ambient Flickering Vignette */
     body::before {
       content: "";
       position: fixed;
@@ -123,7 +121,6 @@
       border-color: var(--antique-gold);
     }
 
-    /* Main Container */
     main {
       width: 100%;
       max-width: 780px;
@@ -135,13 +132,12 @@
       z-index: 10;
     }
 
-    /* Parchment Sheet Card */
     .parchment-sheet {
       width: 100%;
       background: var(--parchment-surface);
       border: 1px solid var(--parchment-border);
       border-radius: 14px;
-      padding: 44px 36px;
+      padding: 40px 36px;
       box-shadow: var(--shadow-deep);
       position: relative;
       display: flex;
@@ -149,7 +145,20 @@
       align-items: center;
       text-align: center;
       margin-bottom: 24px;
-      transition: transform 0.2s ease;
+      transition: transform 0.11s ease;
+    }
+
+    /* Horizontal micro-shake on mistake (3px, 110ms) */
+    .parchment-sheet.shake {
+      animation: micro-shake 0.11s ease-in-out;
+    }
+
+    @keyframes micro-shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-3px); }
+      50% { transform: translateX(3px); }
+      75% { transform: translateX(-2px); }
+      100% { transform: translateX(0); }
     }
 
     .poem-title {
@@ -176,14 +185,13 @@
       border: 1px solid var(--antique-gold);
       border-radius: 20px;
       color: var(--antique-gold);
-      margin-bottom: 34px;
+      margin-bottom: 28px;
     }
 
-    /* Cloze Level Toolbar */
     .level-selector {
       display: flex;
       gap: 8px;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
       flex-wrap: wrap;
       justify-content: center;
     }
@@ -208,7 +216,23 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
-    /* Verse Kinetic Container */
+    .hint-banner {
+      background: rgba(194, 155, 56, 0.15);
+      border: 1px solid var(--antique-gold);
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      color: var(--antique-gold);
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .hint-banner.show {
+      display: block;
+    }
+
     .verse-box {
       font-size: 24px;
       line-height: 2.1;
@@ -218,11 +242,6 @@
       outline: none;
       cursor: text;
       position: relative;
-    }
-
-    .char {
-      position: relative;
-      transition: color 0.15s ease, text-shadow 0.15s ease;
     }
 
     .char.ghost {
@@ -246,7 +265,6 @@
       50% { border-color: transparent; }
     }
 
-    /* Progress bar */
     .progress-container {
       width: 100%;
       height: 3px;
@@ -264,7 +282,6 @@
       transition: width 0.15s ease;
     }
 
-    /* Stats Ribbon */
     .stats-ribbon {
       display: flex;
       gap: 32px;
@@ -279,7 +296,6 @@
       color: var(--ink-primary);
     }
 
-    /* Wax Seal Stamp */
     .wax-seal {
       width: 86px;
       height: 86px;
@@ -333,14 +349,12 @@
       opacity: 1;
     }
 
-    /* Hidden input field for typing capture */
     #hidden-input {
       position: absolute;
       opacity: 0;
       pointer-events: none;
     }
 
-    /* Floating Quick Actions */
     .quick-actions {
       display: flex;
       gap: 12px;
@@ -365,7 +379,6 @@
       transform: translateY(-1px);
     }
 
-    /* Modal dialog */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -417,12 +430,10 @@
       <div class="sub-heading">VELLUM · SANCTUARY</div>
     </div>
     <div style="display: flex; gap: 8px;">
-      <button class="nav-btn" onclick="toggleAudio()" id="audio-toggle-btn">
-        <span>🔊</span> Звук
-      </button>
-      <button class="nav-btn" onclick="toggleTheme()">
-        <span id="theme-icon">🌙</span>
-      </button>
+      <button class="nav-btn" onclick="toggleLanguage()" id="lang-btn">RU</button>
+      <button class="nav-btn" onclick="triggerFeatherHint()" title="Перо: приоткрыть строку на 2 сек">🪶 Перо</button>
+      <button class="nav-btn" onclick="toggleAudio()" id="audio-toggle-btn"><span>🔊</span></button>
+      <button class="nav-btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
     </div>
   </header>
 
@@ -431,13 +442,15 @@
   </div>
 
   <main>
-    <div class="parchment-sheet" onclick="focusTyping()">
+    <div class="parchment-sheet" id="sheet-card" onclick="focusTyping()">
       <div class="level-selector">
         <button class="level-chip active" onclick="setLevel(1, event)">I · Призрак (100%)</button>
-        <button class="level-chip" onclick="setLevel(2, event)">II · Без гласных</button>
+        <button class="level-chip" onclick="setLevel(2, event)">II · 30% слов</button>
         <button class="level-chip" onclick="setLevel(3, event)">III · Cloze 50%</button>
         <button class="level-chip" onclick="setLevel(4, event)">IV · Пустота (Память)</button>
       </div>
+
+      <div class="hint-banner" id="hint-banner">🪶 ПЕРО: СТРОКА ОТКРЫТА НА 2 СЕКУНДЫ</div>
 
       <h1 class="poem-title" id="poem-title">Я вас любил</h1>
       <p class="poem-author" id="poem-author">Александр Пушкин, 1829</p>
@@ -455,7 +468,7 @@
       <div class="stats-ribbon">
         <div>Точность: <span class="stat-val" id="stat-acc">100%</span></div>
         <div>Скорость: <span class="stat-val" id="stat-wpm">0 WPM</span></div>
-        <div>Стих дня: <span class="stat-val">1 / 1</span></div>
+        <div>Строк: <span class="stat-val" id="stat-lines">4</span></div>
       </div>
     </div>
 
@@ -478,10 +491,10 @@
   </div>
 
   <script>
-    // --- Master Poem Catalogue ---
     const POEMS = [
       {
         id: "p1",
+        lang: "ru",
         title: "Я вас любил",
         author: "Александр Пушкин, 1829",
         meter: "ЯМБ · ЭЛЕГИЯ",
@@ -489,6 +502,7 @@
       },
       {
         id: "p2",
+        lang: "ru",
         title: "Парус",
         author: "Михаил Лермонтов, 1832",
         meter: "ЯМБ · РОМАНТИЗМ",
@@ -496,6 +510,7 @@
       },
       {
         id: "p3",
+        lang: "ru",
         title: "Silentium!",
         author: "Федор Тютчев, 1830",
         meter: "ЯМБ · ФИЛОСОФИЯ",
@@ -503,33 +518,40 @@
       },
       {
         id: "p4",
+        lang: "en",
         title: "Sonnet 18",
         author: "William Shakespeare, 1609",
         meter: "IAMBIC PENTAMETER",
         text: "Shall I compare thee to a summer’s day?\nThou art more lovely and more temperate:\nRough winds do shake the darling buds of May,\nAnd summer’s lease hath all too short a date."
+      },
+      {
+        id: "p5",
+        lang: "en",
+        title: "Hope is the thing with feathers",
+        author: "Emily Dickinson, 1861",
+        meter: "COMMON METER",
+        text: "“Hope” is the thing with feathers -\nThat perches in the soul -\nAnd sings the tune without the words -\nAnd never stops - at all -"
       }
     ];
 
     let currentPoemIndex = 0;
+    let selectedLang = 'ru';
     let currentLevel = 1;
     let charIndex = 0;
     let mistakes = 0;
     let startTime = null;
     let isCompleted = false;
+    let isHintActive = false;
+    let hintTimeout = null;
     let audioMuted = false;
     let folio = [];
 
-    // --- Web Audio API Mechanical Sound Engine (< 5ms response time) ---
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
 
     function getAudioContext() {
-      if (!audioCtx) {
-        audioCtx = new AudioContext();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
+      if (!audioCtx) audioCtx = new AudioContext();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
       return audioCtx;
     }
 
@@ -542,7 +564,6 @@
         const gain = ctx.createGain();
 
         if (isSpace) {
-          // Deeper wooden spacebar thud
           osc.type = 'triangle';
           osc.frequency.setValueAtTime(320 + Math.random() * 40, now);
           osc.frequency.exponentialRampToValueAtTime(120, now + 0.05);
@@ -553,7 +574,6 @@
           osc.start(now);
           osc.stop(now + 0.06);
         } else {
-          // Sharp mechanical key impact with slight pitch variation
           osc.type = 'sine';
           const freq = 2100 + (Math.random() * 400 - 200);
           osc.frequency.setValueAtTime(freq, now);
@@ -565,9 +585,26 @@
           osc.start(now);
           osc.stop(now + 0.035);
         }
-      } catch (e) {
-        console.warn("Audio note:", e);
-      }
+      } catch (_) {}
+    }
+
+    function playJammedKeySound() {
+      if (audioMuted) return;
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.exponentialRampToValueAtTime(60, now + 0.07);
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.07);
+      } catch (_) {}
     }
 
     function playBellDing() {
@@ -608,24 +645,29 @@
       } catch (_) {}
     }
 
-    // --- Cloze Masking Logic ---
-    const russianVowels = 'аеёиоуыэюяАЕЁИОУЫЭЮЯ';
-    const englishVowels = 'aeiouyAEIOUY';
-    function isVowel(c) {
-      return russianVowels.includes(c) || englishVowels.includes(c);
-    }
     function isPunct(c) {
       return /[ \t\n\r.,!?;:—\-–"«»’‘()…—]/.test(c);
     }
 
     function getMaskedDisplayChar(char, index, level, text) {
-      if (isPunct(char)) return char;
-      if (level === 1) return char; // Level 1: Ghost
+      if (isPunct(char) || isHintActive) return char;
+      if (level === 1) return char;
       if (level === 2) {
-        return isVowel(char) ? '·' : char; // Level 2: Vowels masked
+        // 30% of significant words masked
+        const words = text.split(' ');
+        let cur = 0;
+        for (let w = 0; w < words.length; w++) {
+          const word = words[w];
+          if (index >= cur && index < cur + word.length) {
+            if (w % 3 === 1) return '·';
+            return char;
+          }
+          cur += word.length + 1;
+        }
+        return char;
       }
       if (level === 3) {
-        // Level 3: Cloze 50% words
+        // Cloze 50%
         const words = text.split(' ');
         let cur = 0;
         for (let w = 0; w < words.length; w++) {
@@ -639,16 +681,21 @@
         }
         return char;
       }
-      // Level 4: The Void
+      // Level 4: Pure Void
       return '·';
     }
 
-    // --- Render Loop ---
+    function getActivePoem() {
+      const filtered = POEMS.filter(p => p.lang === selectedLang);
+      return filtered[currentPoemIndex % filtered.length];
+    }
+
     function renderPoem() {
-      const p = POEMS[currentPoemIndex];
+      const p = getActivePoem();
       document.getElementById('poem-title').innerText = p.title;
       document.getElementById('poem-author').innerText = p.author;
       document.getElementById('poem-meter').innerText = p.meter;
+      document.getElementById('stat-lines').innerText = p.text.split('\n').length;
 
       const container = document.getElementById('verse-container');
       container.innerHTML = '';
@@ -671,11 +718,9 @@
         container.appendChild(span);
       }
 
-      // Progress bar
       const pct = (charIndex / p.text.length) * 100;
       document.getElementById('progress-bar').style.width = pct + '%';
 
-      // Stats
       const total = charIndex + mistakes;
       const acc = total > 0 ? Math.round((charIndex / total) * 100) : 100;
       document.getElementById('stat-acc').innerText = acc + '%';
@@ -687,12 +732,12 @@
       }
     }
 
-    // --- Typing Handler ---
     function handleKey(char) {
       if (isCompleted) return;
       if (!startTime) startTime = Date.now();
 
-      const text = POEMS[currentPoemIndex].text;
+      const p = getActivePoem();
+      const text = p.text;
       if (charIndex >= text.length) return;
 
       const expected = text[charIndex];
@@ -701,9 +746,12 @@
         playTypewriterClick(char === ' ');
         charIndex++;
 
-        // Auto skip newlines or spaces if next
         while (charIndex < text.length && (text[charIndex] === '\n' || text[charIndex] === ' ')) {
-          if (text[charIndex] === ' ') playTypewriterClick(true);
+          if (text[charIndex] === '\n') {
+            playBellDing();
+          } else if (text[charIndex] === ' ') {
+            playTypewriterClick(true);
+          }
           charIndex++;
         }
 
@@ -712,7 +760,12 @@
         }
       } else {
         mistakes++;
-        playTypewriterClick(false);
+        playJammedKeySound();
+        // Trigger 3px horizontal micro-shake (110ms)
+        const sheet = document.getElementById('sheet-card');
+        sheet.classList.remove('shake');
+        void sheet.offsetWidth;
+        sheet.classList.add('shake');
       }
       renderPoem();
     }
@@ -726,8 +779,7 @@
       seal.classList.add('stamped');
       document.getElementById('wax-caption').classList.add('show');
 
-      // Save to Folio
-      const p = POEMS[currentPoemIndex];
+      const p = getActivePoem();
       if (!folio.some(item => item.id === p.id)) {
         folio.push({
           id: p.id,
@@ -738,6 +790,21 @@
         });
         document.getElementById('folio-count').innerText = folio.length;
       }
+    }
+
+    function triggerFeatherHint() {
+      if (isCompleted || isHintActive) return;
+      playBellDing();
+      isHintActive = true;
+      document.getElementById('hint-banner').classList.add('show');
+      renderPoem();
+
+      clearTimeout(hintTimeout);
+      hintTimeout = setTimeout(() => {
+        isHintActive = false;
+        document.getElementById('hint-banner').classList.remove('show');
+        renderPoem();
+      }, 2000);
     }
 
     function restartPoem() {
@@ -758,8 +825,15 @@
       restartPoem();
     }
 
+    function toggleLanguage() {
+      selectedLang = selectedLang === 'ru' ? 'en' : 'ru';
+      document.getElementById('lang-btn').innerText = selectedLang.toUpperCase();
+      currentPoemIndex = 0;
+      restartPoem();
+    }
+
     function nextPoem() {
-      currentPoemIndex = (currentPoemIndex + 1) % POEMS.length;
+      currentPoemIndex++;
       restartPoem();
     }
 
@@ -768,7 +842,6 @@
       inp.focus();
     }
 
-    // Input listeners
     window.addEventListener('keydown', (e) => {
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
         handleKey(e.key);
@@ -788,7 +861,7 @@
 
     function toggleAudio() {
       audioMuted = !audioMuted;
-      document.getElementById('audio-toggle-btn').innerHTML = audioMuted ? '<span>🔇</span> Звук выкл' : '<span>🔊</span> Звук';
+      document.getElementById('audio-toggle-btn').innerHTML = audioMuted ? '<span>🔇</span>' : '<span>🔊</span>';
     }
 
     function toggleTheme() {
@@ -816,16 +889,15 @@
       modal.classList.add('active');
     }
 
-    function closeFolioModal(e) {
+    function closeFolioModal() {
       document.getElementById('folio-modal').classList.remove('active');
     }
 
     function exportCard() {
-      const p = POEMS[currentPoemIndex];
-      alert(`📜 Открытка Vellum сформирована!\n\n"${p.title}" — ${p.author}\n\n${p.text}\n\nСкреплено печатью Vellum.`);
+      const p = getActivePoem();
+      alert(`📜 Открытка Vellum сформирована!\n\n"${p.title}" — ${p.author}\n\n${p.text}\n\nЗапечатано в памяти Vellum.`);
     }
 
-    // Initialize
     renderPoem();
     focusTyping();
   </script>

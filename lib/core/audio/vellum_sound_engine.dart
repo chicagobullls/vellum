@@ -12,6 +12,7 @@ class VellumSoundEngine {
   final AudioPlayer _spacePlayer = AudioPlayer();
   final AudioPlayer _bellPlayer = AudioPlayer();
   final AudioPlayer _stampPlayer = AudioPlayer();
+  final AudioPlayer _errorPlayer = AudioPlayer();
   final Random _rng = Random();
 
   bool isMuted = false;
@@ -23,11 +24,13 @@ class VellumSoundEngine {
       await _spacePlayer.setPlayerMode(PlayerMode.lowLatency);
       await _bellPlayer.setPlayerMode(PlayerMode.lowLatency);
       await _stampPlayer.setPlayerMode(PlayerMode.lowLatency);
+      await _errorPlayer.setPlayerMode(PlayerMode.lowLatency);
 
       await _keyPlayer.setVolume(volume);
       await _spacePlayer.setVolume(volume);
-      await _bellPlayer.setVolume(volume * 0.9);
+      await _bellPlayer.setVolume(volume * 0.95);
       await _stampPlayer.setVolume(volume);
+      await _errorPlayer.setVolume(volume * 0.7);
     } catch (e) {
       debugPrint('Audio initialization note: $e');
     }
@@ -37,7 +40,6 @@ class VellumSoundEngine {
   void playKeystroke() {
     if (isMuted) return;
     try {
-      // Subtle pitch variation to avoid machine-gun effect
       final pitchVar = 0.95 + (_rng.nextDouble() * 0.1);
       _keyPlayer.setPlaybackRate(pitchVar);
       _keyPlayer.play(AssetSource('audio/typewriter_key.wav'), volume: volume);
@@ -60,6 +62,14 @@ class VellumSoundEngine {
     } catch (_) {}
   }
 
+  /// Plays muted mechanical jammed key sound on mistype
+  void playJammedKey() {
+    if (isMuted) return;
+    try {
+      _errorPlayer.play(AssetSource('audio/typewriter_error.wav'), volume: volume * 0.75);
+    } catch (_) {}
+  }
+
   /// Plays physical wax seal stamp squish and solid thud
   void playWaxSealStamp() {
     if (isMuted) return;
@@ -73,5 +83,6 @@ class VellumSoundEngine {
     _spacePlayer.dispose();
     _bellPlayer.dispose();
     _stampPlayer.dispose();
+    _errorPlayer.dispose();
   }
 }

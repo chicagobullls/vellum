@@ -3,45 +3,63 @@ class MaskedChar {
   final String char;
   final bool isVisibleHint;
   final bool isPunctuationOrSpace;
+  final bool isTemporarilyRevealed;
 
   const MaskedChar({
     required this.char,
     required this.isVisibleHint,
     required this.isPunctuationOrSpace,
+    this.isTemporarilyRevealed = false,
   });
 
-  /// Displays either the actual character hint or a ghost underline dot
+  /// Displays either the actual character hint or a ghost dotted underline
   String get displayGlyph {
-    if (isPunctuationOrSpace || isVisibleHint) {
+    if (isPunctuationOrSpace || isVisibleHint || isTemporarilyRevealed) {
       return char;
     }
     return '·';
   }
+
+  MaskedChar copyWith({bool? isTemporarilyRevealed}) => MaskedChar(
+        char: char,
+        isVisibleHint: isVisibleHint,
+        isPunctuationOrSpace: isPunctuationOrSpace,
+        isTemporarilyRevealed: isTemporarilyRevealed ?? this.isTemporarilyRevealed,
+      );
 }
 
-/// Algorithm that generates 4 progressive cloze-deletion memorization levels.
+/// Algorithm that generates 4 progressive Cloze-deletion memorization levels.
 class ClozeMaskGenerator {
-  static const String russianVowels = 'аеёиоуыэюяАЕЁИОУЫЭЮЯ';
-  static const String englishVowels = 'aeiouyAEIOUY';
+  static const Set<String> commonShortParticlesRu = {
+    'в', 'на', 'с', 'со', 'к', 'ко', 'у', 'о', 'об', 'обо', 'от', 'до', 'из', 'за',
+    'по', 'под', 'над', 'и', 'а', 'но', 'да', 'бы', 'ли', 'же', 'не', 'ни', 'то'
+  };
 
-  static bool isVowel(String char) {
-    return russianVowels.contains(char) || englishVowels.contains(char);
-  }
+  static const Set<String> commonShortParticlesEn = {
+    'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'as', 'and', 'but', 'or',
+    'nor', 'so', 'yet', 'the', 'a', 'an', 'is', 'it'
+  };
 
   static bool isPunctuationOrSpace(String char) {
     return RegExp(r'[ \t\n\r.,!?;:—\-–"«»’‘()…—]').hasMatch(char);
   }
 
-  /// Generates masked characters for a single line at a given Cloze Level (1..4)
-  static List<MaskedChar> generateLineMask(String line, int level) {
+  static bool isStructuralParticle(String word) {
+    final cleanWord = word.toLowerCase().replaceAll(RegExp(r'[.,!?;:—\-–"«»’‘()…]'), '');
+    return commonShortParticlesRu.contains(cleanWord) ||
+        commonShortParticlesEn.contains(cleanWord);
+  }
+
+  /// Generates masked characters for a text at a given Cloze Level (1..4)
+  static List<MaskedChar> generateLineMask(String text, int level) {
     final result = <MaskedChar>[];
-    final words = line.split(' ');
+    final words = text.split(' ');
 
     switch (level) {
       case 1:
-        // Level 1: Full Ghost Typing (All letters are visible in ghost ink)
-        for (int i = 0; i < line.length; i++) {
-          final c = line[i];
+        // Level 1: Full Ghost Typing (100% visible ghost hints)
+        for (int i = 0; i < text.length; i++) {
+          final c = text[i];
           result.add(MaskedChar(
             char: c,
             isVisibleHint: true,
@@ -51,57 +69,67 @@ class ClozeMaskGenerator {
         break;
 
       case 2:
-        // Level 2: Vowels Masked (Consonants & punctuation remain visible)
-        for (int i = 0; i < line.length; i++) {
-          final c = line[i];
-          final isPunct = isPunctuationOrSpace(c);
-          final isV = isVowel(c);
-          result.add(MaskedChar(
-            char: c,
-            isVisibleHint: !isV,
-            isPunctuationOrSpace: isPunct,
-          ));
-        }
-        break;
-
-      case 3:
-        // Level 3: 50% Cloze Deletion (Every second word has only first letter visible)
-        int charCursor = 0;
+        // Level 2: 30% of significant words masked (preserves grammatical particles & prepositions)
         for (int wIdx = 0; wIdx < words.length; wIdx++) {
           final word = words[wIdx];
-          final shouldMaskWord = (wIdx % 2 == 1);
+          final isParticle = isStructuralParticle(word);
+          // Mask every 3rd word unless it is a short structural particle
+          final shouldMask = !isParticle && (wIdx % 3 == 1);
 
           for (int cIdx = 0; cIdx < word.length; cIdx++) {
             final c = word[cIdx];
             final isPunct = isPunctuationOrSpace(c);
-            final isFirstLetter = (cIdx == 0);
-
-            final visible = !shouldMaskWord || isFirstLetter || isPunct;
             result.add(MaskedChar(
               char: c,
-              isVisibleHint: visible,
+              isVisibleHint: !shouldMask || isPunct,
               isPunctuationOrSpace: isPunct,
             ));
-            charCursor++;
           }
 
-          // Add space between words
           if (wIdx < words.length - 1) {
             result.add(const MaskedChar(
               char: ' ',
               isVisibleHint: true,
               isPunctuationOrSpace: true,
             ));
-            charCursor++;
+          }
+        }
+        break;
+
+      case 3:
+        // Level 3: 50% Cloze Deletion (alternating words masked, keeping first letter hint)
+        for (int wIdx = 0; wIdx < words.length; wIdx++) {
+          final word = words[wIdx];
+          final shouldMask = (wIdx % 2 == 1);
+
+          for (int cIdx = 0; cIdx < word.length; cIdx++) {
+            final c = word[cIdx];
+            final isPunct = isPunctuationOrSpace(c);
+            final isFirstLetter = (cIdx == 0);
+
+            final visible = !shouldMask || isFirstLetter || isPunct;
+            result.add(MaskedChar(
+              char: c,
+              isVisibleHint: visible,
+              isPunctuationOrSpace: isPunct,
+            ));
+          }
+
+          if (wIdx < words.length - 1) {
+            result.add(const MaskedChar(
+              char: ' ',
+              isVisibleHint: true,
+              isPunctuationOrSpace: true,
+            ));
           }
         }
         break;
 
       case 4:
       default:
-        // Level 4: Pure Memory / The Void (Only punctuation and spaces visible)
-        for (int i = 0; i < line.length; i++) {
-          final c = line[i];
+        // Level 4: Pure Memory / The Void (Only spaces and punctuation visible)
+        for (int i = 0; i < text.length; i++) {
+          final c = text[i];
           final isPunct = isPunctuationOrSpace(c);
           result.add(MaskedChar(
             char: c,
