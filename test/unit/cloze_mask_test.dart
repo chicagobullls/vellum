@@ -14,26 +14,19 @@ void main() {
       }
     });
 
-    test('Level 2: Vowels Masked hides vowels in Russian and English', () {
-      final masked = ClozeMaskGenerator.generateLineMask(testLineRu, 2);
-      expect(masked.length, testLineRu.length);
+    test('Level 2: 30% words masked preserves prepositions and particles', () {
+      const line = 'В душе моей угасла';
+      final masked = ClozeMaskGenerator.generateLineMask(line, 2);
+      expect(masked.length, line.length);
 
-      // 'Я' is a Russian vowel, so it should be masked
-      expect(masked[0].char, 'Я');
-      expect(masked[0].isVisibleHint, isFalse);
-      expect(masked[0].displayGlyph, '·');
-
-      // 'в' is a consonant, so it should be visible
-      expect(masked[2].char, 'в');
-      expect(masked[2].isVisibleHint, isTrue);
-      expect(masked[2].displayGlyph, 'в');
+      // 'В' is a structural preposition, so it must remain visible
+      expect(masked[0].char, 'В');
+      expect(masked[0].isVisibleHint, isTrue);
     });
 
     test('Level 3: 50% Cloze Deletion masks alternating words', () {
       final masked = ClozeMaskGenerator.generateLineMask(testLineRu, 3);
       expect(masked.length, testLineRu.length);
-
-      // First word ("Я") is not masked
       expect(masked[0].isVisibleHint, isTrue);
     });
 

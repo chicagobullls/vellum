@@ -1,11 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vellum/core/billing/vellum_billing_service.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('Milestone M2: Feature Gating & Billing Acceptance Tests', () {
     late VellumBillingService billing;
 
     setUp(() {
+      SharedPreferences.setMockInitialValues({});
       billing = VellumBillingService();
     });
 

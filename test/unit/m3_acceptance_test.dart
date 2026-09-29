@@ -1,9 +1,23 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:vellum/core/audio/audio_theme.dart';
 import 'package:vellum/core/audio/vellum_sound_engine.dart';
 import 'package:vellum/core/observability/telemetry_service.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUpAll(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('xyz.luan/audioplayers.global'),
+      (call) async => 1,
+    );
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('xyz.luan/audioplayers'),
+      (call) async => 1,
+    );
+  });
+
   group('Milestone M3: Settings, Observability & Audio Themes Tests', () {
     test('TASK-112: AudioTheme enum covers all 4 typewriter models', () {
       expect(AudioTheme.values.length, 4);
@@ -27,7 +41,6 @@ void main() {
       final telemetry = TelemetryService();
       await telemetry.init();
 
-      // Ensure no exceptions during telemetry emission
       telemetry.logVerseCompleted(
         poemId: 'poem_test',
         wpm: 55,
