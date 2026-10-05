@@ -11,7 +11,7 @@ def test_task_109_folio_bookplates_and_free_cap():
 
     # Bookplate styling & gold spine
     assert "_buildPressedBookplateCard" in content, "Must implement pressed bookplate card design"
-    assert "width: 4.5" in content and "antiqueGold" in content, "Must render antique gold spine border"
+    assert "width: 4.5" in content and "inkSpine" in content, "Must render ribbon-ink spine border"
     assert "15" in content, "Must enforce 15-poem limit for Free tier"
     assert "VellumProDialog" in content, "Must link to VellumProDialog paywall on limit"
     print("✅ TASK-109: Folio pressed bookplates and 15-poem cap verified.")
@@ -25,7 +25,7 @@ def test_task_110_story_card_studio_and_high_res_export():
     assert "RenderRepaintBoundary" in content, "Must use RenderRepaintBoundary for offscreen export"
     assert "pixelRatio: 3.0" in content, "Must export in high-DPI 3.0 resolution"
     assert "9 / 16" in content and "1.0" in content, "Must support 9:16 and 1:1 aspect ratios"
-    assert "_isCharcoalTheme" in content, "Must support Parchment Light vs Dark Charcoal texture"
+    assert "_isCharcoalTheme" in content, "Must support Typewriter Paper vs Carbon Copy (charcoal) texture"
     assert "Share.shareXFiles" in content, "Must invoke native iOS Share Sheet via SharePlus"
     print("✅ TASK-110: Story Studio high-res rendering, themes, and Share Sheet verified.")
 

@@ -12,11 +12,15 @@ class GhostTypingWidget extends StatefulWidget {
   final Function(int charIndex, int mistakes, bool isCompleted) onProgress;
   final VoidCallback onCompleted;
 
+  /// Extra scroll space so the last lines can rise above overlays floating at the bottom.
+  final double bottomInset;
+
   const GhostTypingWidget({
     super.key,
     required this.poem,
     required this.onProgress,
     required this.onCompleted,
+    this.bottomInset = 0,
   });
 
   @override
@@ -37,9 +41,22 @@ class _GhostTypingWidgetState extends State<GhostTypingWidget>
   int _mistakes = 0;
   bool _isCompleted = false;
 
-  // Exact 22% opacity token from PRD FR-02 & TASK-105
-  static const Color ghostInkColor = Color(0x381A1816);
-  static const Color activeInkColor = Color(0xFF1A1816);
+  // Exact 22% (0.22 alpha) ghost ink token from PRD FR-02 & TASK-105
+  static const Color ghostInkColor = VellumTheme.inkGhost;
+  static const Color activeInkColor = VellumTheme.ink;
+
+  // Typed glyphs carry a faint ribbon-ink bleed; ghost glyphs stay a pencil-light guide.
+  static const TextStyle _typedStyle = TextStyle(
+    color: activeInkColor,
+    shadows: VellumTheme.inkBleed,
+  );
+  static const TextStyle _currentStyle = TextStyle(
+    color: activeInkColor,
+    decoration: TextDecoration.underline,
+    decorationColor: activeInkColor,
+    decorationThickness: 2,
+  );
+  static const TextStyle _ghostStyle = TextStyle(color: ghostInkColor);
 
   @override
   void initState() {
@@ -160,7 +177,7 @@ class _GhostTypingWidgetState extends State<GhostTypingWidget>
             },
             child: SingleChildScrollView(
               controller: _scrollController,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              padding: EdgeInsets.fromLTRB(24, 20, 24, 20 + widget.bottomInset),
               child: _buildRichKineticVerse(),
             ),
           ),
@@ -187,28 +204,17 @@ class _GhostTypingWidgetState extends State<GhostTypingWidget>
 
   Widget _buildRichKineticVerse() {
     final original = widget.poem.originalText;
-    final spans = <TextSpan>[];
+    final cursor = min(_charIndex, original.length);
 
-    for (int i = 0; i < original.length; i++) {
-      final char = original[i];
-      final isTyped = i < _charIndex;
-      final isCurrent = i == _charIndex;
-
-      spans.add(
-        TextSpan(
-          text: char,
-          style: TextStyle(
-            color: isTyped
-                ? activeInkColor
-                : isCurrent
-                    ? VellumTheme.antiqueGold
-                    : ghostInkColor,
-            fontWeight: isTyped || isCurrent ? FontWeight.w600 : FontWeight.normal,
-            backgroundColor: isCurrent ? VellumTheme.antiqueGoldMuted : null,
-          ),
-        ),
-      );
-    }
+    // Three style runs instead of one span per glyph: cheaper to lay out on every
+    // keystroke and keeps TT2020's contextual glyph variation intact across runs.
+    final spans = <TextSpan>[
+      if (cursor > 0) TextSpan(text: original.substring(0, cursor), style: _typedStyle),
+      if (cursor < original.length)
+        TextSpan(text: original[cursor], style: _currentStyle),
+      if (cursor + 1 < original.length)
+        TextSpan(text: original.substring(cursor + 1), style: _ghostStyle),
+    ];
 
     return Center(
       child: SelectableText.rich(

@@ -5,8 +5,10 @@ import '../../core/utils/roman_numerals.dart';
 import '../../data/models/poem.dart';
 import '../../data/models/user_folio_entry.dart';
 import '../../data/repositories/poem_repository.dart';
-import '../widgets/parchment_background.dart';
-import '../widgets/wax_seal_widget.dart';
+import '../widgets/vellum_app_bar.dart';
+import '../widgets/seal_widget.dart';
+import '../widgets/soft_surface.dart';
+import '../widgets/typewriter_paper_background.dart';
 import '../memory_practice/cloze_practice_screen.dart';
 import '../paywall/vellum_pro_dialog.dart';
 
@@ -59,66 +61,60 @@ class _FolioScreenState extends State<FolioScreen> {
     }).toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('МОЙ ФОЛИАНТ', style: VellumTheme.headerDateStyle),
-        centerTitle: true,
+      extendBodyBehindAppBar: true,
+      appBar: VellumAppBar(
+        title: 'МОЙ ФОЛИАНТ',
         actions: [
           // Pro Status / Upgrade Badge
-          TextButton.icon(
-            icon: Icon(
-              Icons.stars,
-              size: 16,
-              color: isPro ? VellumTheme.antiqueGold : VellumTheme.inkSecondary,
-            ),
-            label: Text(
-              isPro ? 'PRO' : '$count / 15',
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: isPro ? VellumTheme.antiqueGold : VellumTheme.inkSecondary,
+          Center(
+            child: SoftSurface(
+              tone: isPro ? SurfaceTone.ink : SurfaceTone.paper,
+              radius: null,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+              onTap: () {
+                showSoftDialog(
+                  context: context,
+                  builder: (_) => const VellumProDialog(),
+                ).then((_) => setState(() {}));
+              },
+              child: Text(
+                isPro ? 'PRO' : '$count / 15',
+                style: VellumTheme.labelStyle.copyWith(
+                  color: isPro ? VellumTheme.paperHighlight : VellumTheme.ink,
+                ),
               ),
             ),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (_) => const VellumProDialog(),
-              ).then((_) => setState(() {}));
-            },
           ),
         ],
       ),
-      body: ParchmentBackground(
+      body: TypewriterPaperBackground(
         child: Column(
           children: [
             // Search Input
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              child: TextField(
-                style: const TextStyle(fontSize: 13),
-                decoration: InputDecoration(
-                  hintText: 'Поиск по автору или названию...',
-                  prefixIcon: const Icon(Icons.search, size: 18, color: VellumTheme.inkSecondary),
-                  filled: true,
-                  fillColor: VellumTheme.parchmentSurface,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: VellumTheme.antiqueGold.withOpacity(0.3)),
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+              child: SoftSurface(
+                radius: null,
+                elevated: false,
+                padding: EdgeInsets.zero,
+                child: TextField(
+                  style: const TextStyle(fontSize: 13, color: VellumTheme.ink),
+                  decoration: const InputDecoration(
+                    hintText: 'Поиск по автору или названию...',
+                    hintStyle: TextStyle(fontSize: 13, color: VellumTheme.inkSecondary),
+                    prefixIcon: Icon(Icons.search, size: 18, color: VellumTheme.inkSecondary),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 13),
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: VellumTheme.antiqueGold.withOpacity(0.3)),
-                  ),
+                  onChanged: (val) => setState(() => _searchQuery = val),
                 ),
-                onChanged: (val) => setState(() => _searchQuery = val),
               ),
             ),
 
             // Folio Card List
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator(color: VellumTheme.antiqueGold))
+                  ? const Center(child: CircularProgressIndicator(strokeWidth: 1.5))
                   : filteredEntries.isEmpty
                       ? _buildEmptyState()
                       : ListView.separated(
@@ -148,17 +144,17 @@ class _FolioScreenState extends State<FolioScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.auto_stories_outlined, size: 54, color: VellumTheme.inkSecondary),
-            const SizedBox(height: 16),
+            const Icon(Icons.auto_stories_outlined, size: 48, color: VellumTheme.inkSecondary),
+            const SizedBox(height: 18),
             Text(
-              'Фолиант пока чист',
-              style: VellumTheme.poemTitleStyle.copyWith(fontSize: 22),
+              'ФОЛИАНТ ПОКА ЧИСТ',
+              style: VellumTheme.poemTitleStyle.copyWith(fontSize: 18),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             const Text(
-              'Завершите свой первый стих дня, чтобы скрепить его сургучной печатью в этой книге.',
+              'Завершите свой первый стих дня, чтобы скрепить его печатью в этой книге.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: VellumTheme.inkSecondary, height: 1.5),
+              style: TextStyle(fontSize: 13, color: VellumTheme.inkSecondary, height: 1.6),
             ),
           ],
         ),
@@ -166,78 +162,74 @@ class _FolioScreenState extends State<FolioScreen> {
     );
   }
 
-  /// Pressed bookplate card design with antique gold spine (TASK-109)
+  /// Pressed bookplate card: a soft paper card with a ribbon-ink spine (TASK-109)
   Widget _buildPressedBookplateCard(Poem poem, UserFolioEntry entry) {
-    final sealColor = entry.waxSealColor == 'antique_gold'
-        ? VellumTheme.antiqueGold
-        : VellumTheme.waxCrimson;
-
     final dateStr = '${entry.masteredAt.day}.${entry.masteredAt.month}.${entry.masteredAt.year}';
 
-    return InkWell(
+    return SoftSurface(
+      padding: EdgeInsets.zero,
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => ClozePracticeScreen(poem: poem, repository: widget.repository),
         ),
       ),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: VellumTheme.parchmentSurface,
-          borderRadius: BorderRadius.circular(10),
-          // Antique Gold Book Spine on the left edge
-          border: const Border(
-            left: BorderSide(color: VellumTheme.antiqueGold, width: 4.5),
-            top: BorderSide(color: Color(0x22C29B38)),
-            right: BorderSide(color: Color(0x22C29B38)),
-            bottom: BorderSide(color: Color(0x22C29B38)),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            WaxSealWidget(
-              size: 52,
-              monogram: RomanNumerals.toRoman(entry.maxClozeLevelAchieved),
-              color: sealColor,
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(poem.title, style: VellumTheme.poemTitleStyle.copyWith(fontSize: 18)),
-                  const SizedBox(height: 3),
-                  Text(
-                    '${poem.author}, ${poem.year}',
-                    style: VellumTheme.poemAuthorStyle.copyWith(fontSize: 13),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Ribbon-ink book spine along the left edge, set inside the card
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 14, 0, 14),
+                child: Container(
+                  width: 4.5,
+                  decoration: BoxDecoration(
+                    gradient: VellumTheme.inkSpine,
+                    borderRadius: BorderRadius.circular(2.25),
                   ),
-                  const SizedBox(height: 8),
-                  Row(
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 16, 16, 16),
+                  child: Row(
                     children: [
-                      Text(
-                        'Заучено: $dateStr',
-                        style: const TextStyle(fontSize: 11, color: VellumTheme.inkSecondary),
+                      SealWidget(
+                        size: 52,
+                        monogram: RomanNumerals.toRoman(entry.maxClozeLevelAchieved),
+                        finish: SealFinish.fromStored(entry.waxSealColor),
                       ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'Точность: ${entry.bestAccuracy.toStringAsFixed(1)}%',
-                        style: const TextStyle(fontSize: 11, color: VellumTheme.inkSecondary),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              poem.title.toUpperCase(),
+                              style: VellumTheme.poemTitleStyle.copyWith(fontSize: 15),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${poem.author}, ${poem.year}',
+                              style: VellumTheme.poemAuthorStyle.copyWith(fontSize: 12),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'ЗАУЧЕНО $dateStr  ·  ${entry.bestAccuracy.toStringAsFixed(1)}%',
+                              style: VellumTheme.labelStyle.copyWith(fontSize: 10, letterSpacing: 1),
+                            ),
+                          ],
+                        ),
                       ),
+                      const Icon(Icons.chevron_right, size: 20, color: VellumTheme.inkSecondary),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-            const Icon(Icons.arrow_forward_ios, size: 14, color: VellumTheme.inkSecondary),
-          ],
+            ],
+          ),
         ),
       ),
     );

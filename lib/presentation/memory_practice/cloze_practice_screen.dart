@@ -9,8 +9,10 @@ import '../../data/models/poem.dart';
 import '../../data/models/user_folio_entry.dart';
 import '../../data/repositories/poem_repository.dart';
 import '../../domain/algorithms/cloze_mask_generator.dart';
-import '../widgets/parchment_background.dart';
-import '../widgets/wax_seal_widget.dart';
+import '../widgets/vellum_app_bar.dart';
+import '../widgets/seal_widget.dart';
+import '../widgets/soft_surface.dart';
+import '../widgets/typewriter_paper_background.dart';
 import '../paywall/vellum_pro_dialog.dart';
 
 class ClozePracticeScreen extends StatefulWidget {
@@ -66,7 +68,7 @@ class _ClozePracticeScreenState extends State<ClozePracticeScreen> {
 
   void _onLevelSelected(int lvl) {
     if (!_billing.isClozeLevelUnlocked(lvl)) {
-      showDialog(
+      showSoftDialog(
         context: context,
         builder: (_) => const VellumProDialog(
           triggerReason: 'Уровни заучивания Cloze III и IV доступны в Vellum Pro',
@@ -170,43 +172,29 @@ class _ClozePracticeScreenState extends State<ClozePracticeScreen> {
   }
 
   void _showMasteredDialog(double accuracy, int wpm) {
-    showDialog(
+    showSoftDialog(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => Dialog(
-        backgroundColor: VellumTheme.parchmentLight,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: VellumTheme.antiqueGold, width: 1.5),
-        ),
+      builder: (ctx) => SoftDialog(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              WaxSealWidget(
+              SealWidget(
                 size: 88,
-                monogram: '★',
-                color: _selectedLevel >= 3 ? VellumTheme.antiqueGold : VellumTheme.waxCrimson,
+                monogram: RomanNumerals.toRoman(_selectedLevel),
+                finish: _sealFinish,
               ),
-              const SizedBox(height: 16),
-              const Text(
-                'MASTERED · СТИХ ПОКОРЕН',
-                style: TextStyle(
-                  fontFamily: 'Cinzel',
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 2.5,
-                  color: VellumTheme.antiqueGold,
-                ),
-              ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 18),
+              const Text('MASTERED · СТИХ ПОКОРЕН', style: VellumTheme.captionStyle),
+              const SizedBox(height: 10),
               Text(
-                widget.poem.title,
+                widget.poem.title.toUpperCase(),
                 textAlign: TextAlign.center,
-                style: VellumTheme.poemTitleStyle.copyWith(fontSize: 20),
+                style: VellumTheme.poemTitleStyle.copyWith(fontSize: 18),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -216,18 +204,12 @@ class _ClozePracticeScreenState extends State<ClozePracticeScreen> {
                 ],
               ),
               const SizedBox(height: 24),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: VellumTheme.inkPrimary,
-                  foregroundColor: VellumTheme.parchmentLight,
-                  minimumSize: const Size.fromHeight(46),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
+              SoftButton(
+                label: 'ВЕРНУТЬСЯ В СВЯТИЛИЩЕ',
                 onPressed: () {
                   Navigator.pop(ctx);
                   Navigator.pop(context);
                 },
-                child: const Text('ВЕРНУТЬСЯ В СВЯТИЛИЩЕ (SANCTUARY)'),
               ),
             ],
           ),
@@ -236,12 +218,22 @@ class _ClozePracticeScreenState extends State<ClozePracticeScreen> {
     );
   }
 
+  SealFinish get _sealFinish => _selectedLevel >= 3 ? SealFinish.ink : SealFinish.paper;
+
   Widget _buildStatPill(String title, String val) {
     return Column(
       children: [
-        Text(title, style: const TextStyle(fontSize: 11, color: VellumTheme.inkSecondary)),
-        const SizedBox(height: 2),
-        Text(val, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: VellumTheme.inkPrimary)),
+        Text(title.toUpperCase(), style: VellumTheme.captionStyle.copyWith(fontSize: 9)),
+        const SizedBox(height: 4),
+        Text(
+          val,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: VellumTheme.ink,
+            shadows: VellumTheme.inkBleed,
+          ),
+        ),
       ],
     );
   }
@@ -261,100 +253,112 @@ class _ClozePracticeScreenState extends State<ClozePracticeScreen> {
     final progress = (_charIndex / totalLen).clamp(0.0, 1.0);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('ТРЕНИРОВКА ПАМЯТИ', style: VellumTheme.headerDateStyle),
-        centerTitle: true,
+      extendBodyBehindAppBar: true,
+      appBar: VellumAppBar(
+        title: 'ТРЕНИРОВКА ПАМЯТИ',
         actions: [
-          IconButton(
-            icon: Icon(
-              Icons.edit_note,
-              color: _isHintActive ? VellumTheme.antiqueGold : VellumTheme.inkPrimary,
-            ),
-            tooltip: 'Перо: приоткрыть строку на 2 сек',
-            onPressed: _triggerFeatherHint,
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh, color: VellumTheme.inkPrimary),
-            tooltip: 'Начать заново',
-            onPressed: _regenerateMask,
+          SoftToolbar(
+            children: [
+              IconButton(
+                icon: Icon(
+                  Icons.edit_note,
+                  size: 22,
+                  color: _isHintActive ? VellumTheme.inkSecondary : VellumTheme.ink,
+                ),
+                tooltip: 'Перо: приоткрыть строку на 2 сек',
+                onPressed: _triggerFeatherHint,
+              ),
+              IconButton(
+                icon: const Icon(Icons.refresh, size: 20),
+                tooltip: 'Начать заново',
+                onPressed: _regenerateMask,
+              ),
+            ],
           ),
         ],
       ),
-      body: ParchmentBackground(
+      body: TypewriterPaperBackground(
         child: Column(
           children: [
-            // Roman Numeral Level Selector (I..IV) with Pro Badge on III & IV
+            // Roman Numeral Level Selector (I..IV) with lock on Pro levels III & IV
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [1, 2, 3, 4].map((lvl) {
-                  final isSelected = _selectedLevel == lvl;
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: SoftSegmentedControl(
+                count: 4,
+                height: 46,
+                selectedIndex: _selectedLevel - 1,
+                onSelected: (i) => _onLevelSelected(i + 1),
+                itemBuilder: (context, i, isSelected) {
+                  final lvl = i + 1;
                   final isLocked = !_billing.isClozeLevelUnlocked(lvl);
+                  final foreground = isSelected ? VellumTheme.ink : VellumTheme.inkSecondary;
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            RomanNumerals.toRoman(lvl),
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: foreground),
+                          ),
+                          if (isLocked) ...[
+                            const SizedBox(width: 4),
+                            Icon(Icons.lock_outline, size: 11, color: foreground),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        _getLevelTitle(lvl).toUpperCase(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 8, letterSpacing: 0.8, color: foreground),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
 
-                  return ChoiceChip(
-                    label: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '${RomanNumerals.toRoman(lvl)}: ${_getLevelTitle(lvl)}',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                            color: isSelected ? VellumTheme.parchmentLight : VellumTheme.inkPrimary,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: InkProgressBar(value: progress),
+            ),
+
+            AnimatedSize(
+              duration: const Duration(milliseconds: 180),
+              child: _isHintActive
+                  ? const Padding(
+                      padding: EdgeInsets.fromLTRB(24, 12, 24, 0),
+                      child: SoftSurface(
+                        radius: null,
+                        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 14),
+                        child: Center(
+                          child: Text(
+                            'ПЕРО: СТРОКА ОТКРЫТА НА 2 СЕКУНДЫ',
+                            style: VellumTheme.captionStyle,
                           ),
                         ),
-                        if (isLocked) ...[
-                          const SizedBox(width: 4),
-                          const Icon(Icons.lock, size: 10, color: VellumTheme.antiqueGold),
-                        ],
-                      ],
-                    ),
-                    selected: isSelected,
-                    selectedColor: VellumTheme.inkPrimary,
-                    backgroundColor: VellumTheme.parchmentSurface,
-                    onSelected: (_) => _onLevelSelected(lvl),
-                  );
-                }).toList(),
-              ),
+                      ),
+                    )
+                  : const SizedBox(width: double.infinity),
             ),
-
-            // Progress bar
-            LinearProgressIndicator(
-              value: progress,
-              backgroundColor: VellumTheme.antiqueGoldMuted,
-              valueColor: const AlwaysStoppedAnimation<Color>(VellumTheme.antiqueGold),
-              minHeight: 2.0,
-            ),
-
-            if (_isHintActive)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                color: VellumTheme.antiqueGold.withOpacity(0.15),
-                child: const Text(
-                  '🪶 ПЕРО: СТРОКА ОТКРЫТА НА 2 СЕКУНДЫ',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.5,
-                    color: VellumTheme.antiqueGold,
-                  ),
-                ),
-              ),
 
             Expanded(
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () => FocusScope.of(context).requestFocus(_focusNode),
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 22),
                   child: Column(
                     children: [
-                      Text(widget.poem.title, style: VellumTheme.poemTitleStyle, textAlign: TextAlign.center),
-                      const SizedBox(height: 4),
+                      Text(
+                        widget.poem.title.toUpperCase(),
+                        style: VellumTheme.poemTitleStyle,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 6),
                       Text(widget.poem.author, style: VellumTheme.poemAuthorStyle),
                       const SizedBox(height: 28),
 
@@ -363,22 +367,13 @@ class _ClozePracticeScreenState extends State<ClozePracticeScreen> {
                       const SizedBox(height: 36),
 
                       if (_isCompleted) ...[
-                        WaxSealWidget(
-                          size: 92,
-                          monogram: '★',
-                          color: _selectedLevel >= 3 ? VellumTheme.antiqueGold : VellumTheme.waxCrimson,
+                        SealWidget(
+                          size: 88,
+                          monogram: RomanNumerals.toRoman(_selectedLevel),
+                          finish: _sealFinish,
                         ),
                         const SizedBox(height: 14),
-                        const Text(
-                          'MASTERED',
-                          style: TextStyle(
-                            fontFamily: 'Cinzel',
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 3,
-                            color: VellumTheme.antiqueGold,
-                          ),
-                        ),
+                        const Text('MASTERED', style: VellumTheme.headerDateStyle),
                       ],
                     ],
                   ),
@@ -418,9 +413,30 @@ class _ClozePracticeScreenState extends State<ClozePracticeScreen> {
     }
   }
 
+  static const TextStyle _typedStyle = TextStyle(
+    color: VellumTheme.ink,
+    shadows: VellumTheme.inkBleed,
+  );
+  static const TextStyle _currentStyle = TextStyle(
+    color: VellumTheme.ink,
+    decoration: TextDecoration.underline,
+    decorationColor: VellumTheme.ink,
+    decorationThickness: 2,
+  );
+  static const TextStyle _ghostStyle = TextStyle(color: VellumTheme.inkGhost);
+
   Widget _buildMaskedDisplay() {
     final spans = <TextSpan>[];
     final original = widget.poem.originalText;
+    final buffer = StringBuffer();
+    TextStyle? runStyle;
+
+    // Merge consecutive glyphs of the same state into one run.
+    void flush() {
+      if (buffer.isEmpty) return;
+      spans.add(TextSpan(text: buffer.toString(), style: runStyle));
+      buffer.clear();
+    }
 
     for (int i = 0; i < original.length; i++) {
       final isTyped = i < _charIndex;
@@ -438,21 +454,18 @@ class _ClozePracticeScreenState extends State<ClozePracticeScreen> {
         displayChar = original[i];
       }
 
-      spans.add(
-        TextSpan(
-          text: displayChar,
-          style: TextStyle(
-            color: isTyped
-                ? VellumTheme.inkCorrect
-                : isCurrent
-                    ? VellumTheme.antiqueGold
-                    : VellumTheme.inkGhost,
-            fontWeight: isTyped || isCurrent ? FontWeight.w600 : FontWeight.normal,
-            backgroundColor: isCurrent ? VellumTheme.antiqueGoldMuted : null,
-          ),
-        ),
-      );
+      final style = isTyped
+          ? _typedStyle
+          : isCurrent
+              ? _currentStyle
+              : _ghostStyle;
+      if (!identical(style, runStyle)) {
+        flush();
+        runStyle = style;
+      }
+      buffer.write(displayChar);
     }
+    flush();
 
     return SelectableText.rich(
       TextSpan(children: spans, style: VellumTheme.verseStyle),

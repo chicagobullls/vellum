@@ -4,7 +4,9 @@ import '../../core/audio/vellum_sound_engine.dart';
 import '../../core/billing/vellum_billing_service.dart';
 import '../../core/haptics/vellum_haptic_engine.dart';
 import '../../core/theme/vellum_theme.dart';
-import '../widgets/parchment_background.dart';
+import '../widgets/vellum_app_bar.dart';
+import '../widgets/soft_surface.dart';
+import '../widgets/typewriter_paper_background.dart';
 import '../paywall/vellum_pro_dialog.dart';
 
 /// Settings & Sound Sanctuary Screen (SCR-06).
@@ -32,7 +34,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _onThemeSelected(AudioTheme theme) {
     if (theme.isPro && !_billing.isPro) {
-      showDialog(
+      showSoftDialog(
         context: context,
         builder: (_) => VellumProDialog(
           triggerReason: 'Тема звука «${theme.title}» доступна в Vellum Pro',
@@ -53,66 +55,58 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final isPro = _billing.isPro;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('НАСТРОЙКИ · SANCTUARY', style: VellumTheme.headerDateStyle),
-        centerTitle: true,
-      ),
-      body: ParchmentBackground(
+      extendBodyBehindAppBar: true,
+      appBar: const VellumAppBar(title: 'НАСТРОЙКИ · SANCTUARY'),
+      body: TypewriterPaperBackground(
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           children: [
             // Pro Membership Banner
-            GestureDetector(
-              onTap: () => showDialog(
+            SoftSurface(
+              tone: SurfaceTone.ink,
+              radius: 24,
+              padding: const EdgeInsets.all(18),
+              onTap: () => showSoftDialog(
                 context: context,
                 builder: (_) => const VellumProDialog(),
               ).then((_) => setState(() {})),
-              child: Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: isPro ? VellumTheme.antiqueGoldMuted : VellumTheme.parchmentSurface,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: VellumTheme.antiqueGold, width: 1.5),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      isPro ? Icons.verified : Icons.stars,
-                      color: VellumTheme.antiqueGold,
-                      size: 28,
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            isPro ? 'VELLUM PATRON · PRO' : 'VELLUM PRO',
-                            style: const TextStyle(
-                              fontFamily: 'Cinzel',
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.5,
-                              color: VellumTheme.antiqueGold,
-                            ),
+              child: Row(
+                children: [
+                  Icon(
+                    isPro ? Icons.verified_outlined : Icons.workspace_premium_outlined,
+                    color: VellumTheme.paperHighlight,
+                    size: 26,
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isPro ? 'VELLUM PATRON · PRO' : 'VELLUM PRO',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 2.0,
+                            color: VellumTheme.paperHighlight,
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            isPro
-                                ? 'Все сокровищницы, звуки и безлимитный фолиант открыты.'
-                                : 'Разблокируйте безлимитный фолиант, звуки и глубокий Cloze.',
-                            style: const TextStyle(fontSize: 12, color: VellumTheme.inkSecondary),
-                          ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          isPro
+                              ? 'Все сокровищницы, звуки и безлимитный фолиант открыты.'
+                              : 'Разблокируйте безлимитный фолиант, звуки и глубокий Cloze.',
+                          style: const TextStyle(fontSize: 11, height: 1.4, color: VellumTheme.carbonInkSecondary),
+                        ),
+                      ],
                     ),
-                    const Icon(Icons.arrow_forward_ios, size: 14, color: VellumTheme.antiqueGold),
-                  ],
-                ),
+                  ),
+                  const Icon(Icons.chevron_right, size: 20, color: VellumTheme.paperHighlight),
+                ],
               ),
             ),
 
-            const SizedBox(height: 28),
+            const SizedBox(height: 32),
 
             // Section 1: Acoustic Typewriter Themes
             _buildSectionHeader('АКУСТИЧЕСКИЕ ТЕМЫ ПЕЧАТНЫХ МАШИНОК'),
@@ -121,59 +115,47 @@ class _SettingsScreenState extends State<SettingsScreen> {
               final isSelected = _sound.currentTheme == theme;
               final isLocked = theme.isPro && !isPro;
 
-              return Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                decoration: BoxDecoration(
-                  color: VellumTheme.parchmentSurface,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: isSelected ? VellumTheme.antiqueGold : const Color(0x22C29B38),
-                    width: isSelected ? 1.5 : 1.0,
-                  ),
-                ),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-                  leading: IconButton(
-                    icon: const Icon(Icons.volume_up_outlined, color: VellumTheme.antiqueGold),
-                    tooltip: 'Прослушать звук',
-                    onPressed: () => _sound.previewTheme(theme),
-                  ),
-                  title: Row(
-                    children: [
-                      Text(
-                        theme.title,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                          color: VellumTheme.inkPrimary,
-                        ),
-                      ),
-                      if (isLocked) ...[
-                        const SizedBox(width: 6),
-                        const Icon(Icons.lock, size: 12, color: VellumTheme.antiqueGold),
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: SoftSurface(
+                  elevated: isSelected,
+                  padding: EdgeInsets.zero,
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.only(left: 4, right: 14),
+                    leading: IconButton(
+                      icon: const Icon(Icons.volume_up_outlined, size: 20),
+                      tooltip: 'Прослушать звук',
+                      onPressed: () => _sound.previewTheme(theme),
+                    ),
+                    title: Row(
+                      children: [
+                        Flexible(child: Text(theme.title)),
+                        if (isLocked) ...[
+                          const SizedBox(width: 6),
+                          const Icon(Icons.lock_outline, size: 13, color: VellumTheme.inkSecondary),
+                        ],
                       ],
-                    ],
+                    ),
+                    subtitle: Text(theme.description),
+                    trailing: isSelected
+                        ? const Icon(Icons.check, color: VellumTheme.ink, size: 20)
+                        : null,
+                    onTap: () => _onThemeSelected(theme),
                   ),
-                  subtitle: Text(
-                    theme.description,
-                    style: const TextStyle(fontSize: 11, color: VellumTheme.inkSecondary),
-                  ),
-                  trailing: isSelected
-                      ? const Icon(Icons.check_circle, color: VellumTheme.antiqueGold, size: 20)
-                      : null,
-                  onTap: () => _onThemeSelected(theme),
                 ),
               );
             }),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
 
             // Section 2: Tactile & Sound Settings
             _buildSectionHeader('ТАКТИЛЬНЫЙ И ЗВУКОВОЙ ОТКЛИК'),
+            const SizedBox(height: 4),
             SwitchListTile.adaptive(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+              applyCupertinoTheme: true,
               title: const Text('Звуковые щелчки литер'),
-              subtitle: const Text('Воспроизведение механики при наборе', style: TextStyle(fontSize: 12)),
-              activeColor: VellumTheme.antiqueGold,
+              subtitle: const Text('Воспроизведение механики при наборе'),
               value: _soundEnabled,
               onChanged: (val) {
                 setState(() {
@@ -183,9 +165,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               },
             ),
             SwitchListTile.adaptive(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+              applyCupertinoTheme: true,
               title: const Text('Тактильная отдача (Taptic Engine)'),
-              subtitle: const Text('Физический импульс удара молоточка', style: TextStyle(fontSize: 12)),
-              activeColor: VellumTheme.antiqueGold,
+              subtitle: const Text('Физический импульс удара молоточка'),
               value: _hapticsEnabled,
               onChanged: (val) {
                 setState(() {
@@ -195,13 +178,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               },
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
 
             // Section 3: Daily Ritual & Reminders
             _buildSectionHeader('ЕЖЕДНЕВНЫЙ РИТУАЛ'),
+            const SizedBox(height: 4),
             ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 4),
               title: const Text('Время утреннего вдохновения'),
-              subtitle: Text('Напоминание о новом стихе дня: $_reminderTime', style: const TextStyle(fontSize: 12)),
+              subtitle: Text('Напоминание о новом стихе дня: $_reminderTime'),
               trailing: const Icon(Icons.access_time, color: VellumTheme.inkSecondary),
               onTap: () async {
                 final picked = await showTimePicker(
@@ -216,40 +201,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
               },
             ),
 
-            const SizedBox(height: 36),
+            const SizedBox(height: 40),
 
             // Zero-PII Privacy & Legal
             Center(
               child: Column(
                 children: [
-                  const Text(
-                    'VELLUM v1.0.0 (Impeller 120fps)',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 11,
-                      letterSpacing: 1.5,
-                      color: VellumTheme.inkSecondary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
+                  const Text('VELLUM v1.0.0 (Impeller 120fps)', style: VellumTheme.captionStyle),
+                  const SizedBox(height: 8),
                   const Text(
                     '100% Offline-first · Zero-PII Architecture\nВаши стихи и нажатия клавиш никогда не покидают ваше устройство.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 11, color: VellumTheme.inkSecondary, height: 1.5),
+                    style: TextStyle(fontSize: 10, color: VellumTheme.inkSecondary, height: 1.6),
                   ),
                   const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       TextButton(
                         onPressed: () {},
-                        child: const Text('Политика конфиденциальности', style: TextStyle(fontSize: 11, color: VellumTheme.inkSecondary)),
+                        child: const Text('Политика конфиденциальности'),
                       ),
-                      const Text('·', style: TextStyle(color: VellumTheme.inkSecondary)),
                       TextButton(
                         onPressed: () {},
-                        child: const Text('Условия использования', style: TextStyle(fontSize: 11, color: VellumTheme.inkSecondary)),
+                        child: const Text('Условия использования'),
                       ),
                     ],
                   ),
@@ -263,15 +239,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildSectionHeader(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontFamily: 'Cinzel',
-        fontSize: 11,
-        letterSpacing: 2.0,
-        fontWeight: FontWeight.bold,
-        color: VellumTheme.antiqueGold,
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(left: 4),
+      child: Text(title, style: VellumTheme.captionStyle),
     );
   }
 }

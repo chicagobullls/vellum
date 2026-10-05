@@ -1,107 +1,218 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 
-/// Vellum Theme System: Victorian Dark Academia meets Apple Scandinavian Minimalism
+/// Vellum Theme System: Typewriter Paper & Soft Minimalism.
+/// Ribbon ink typed onto a worn light-beige sheet; controls are plain surfaces with soft shadows.
 class VellumTheme {
-  // Light Palette: Handmade Parchment
-  static const Color parchmentLight = Color(0xFFFBF8F1);
-  static const Color parchmentSurface = Color(0xFFF4EFE6);
-  static const Color inkPrimary = Color(0xFF1A1816);
-  static const Color inkSecondary = Color(0xFF5C554E);
-  static const Color inkGhost = Color(0x401A1816); // 25% opacity
-  static const Color inkCorrect = Color(0xFF1A1816);
-  static const Color inkMistake = Color(0xFFA83232);
+  /// Bundled typewriter face (TT2020, SIL OFL 1.1): Style E as regular, Style B as bold.
+  static const String typewriterFamily = 'TT2020';
 
-  // Dark Academia Palette: Antique Walnut & Night Ink
-  static const Color darkWood = Color(0xFF141311);
-  static const Color darkSurface = Color(0xFF1D1B18);
-  static const Color darkInkGhost = Color(0x35E6DFD5);
-  static const Color darkInkPrimary = Color(0xFFEBE5DB);
-  static const Color darkInkSecondary = Color(0xFFA0988E);
+  // Typewriter Paper Palette (light beige, default)
+  static const Color paperHighlight = Color(0xFFF8F3EA);
+  static const Color paperBase = Color(0xFFF0E8DA);
+  static const Color paperShade = Color(0xFFE2D5C0);
+  static const Color paperSurface = Color(0xFFFCFAF6); // cards and controls lifted off the sheet
+  static const Color ink = Color(0xFF231F1A); // ribbon black
+  static const Color inkSecondary = Color(0xFF6E6555); // faded ribbon
+  static const Color inkGhost = Color(0x38231F1A); // ribbon ink @ 22%
+  static const Color inkRed = Color(0xFFA3362B); // red half of a bichrome ribbon, errors only
+  static const Color hairline = Color(0x26231F1A); // 1px rules and tracks
 
-  // Luxury Accents
-  static const Color antiqueGold = Color(0xFFC29B38);
-  static const Color antiqueGoldMuted = Color(0x33C29B38);
-  static const Color waxCrimson = Color(0xFF842D2D);
-  static const Color waxCrimsonGlow = Color(0x4D842D2D);
+  // Carbon Copy Palette (dark)
+  static const Color carbonHighlight = Color(0xFF2F323A);
+  static const Color carbonBase = Color(0xFF23252C);
+  static const Color carbonDeep = Color(0xFF16171C);
+  static const Color carbonInk = Color(0xFFE8E3D6);
+  static const Color carbonInkSecondary = Color(0xFFA29C8F);
+  static const Color carbonGhost = Color(0x38E8E3D6); // carbon ink @ 22%
+
+  /// Soft, warm shadow of a paper card: a tight contact shade plus a wide ambient falloff.
+  static const List<BoxShadow> softShadow = [
+    BoxShadow(color: Color(0x0F3D2E1C), blurRadius: 3, offset: Offset(0, 1)),
+    BoxShadow(color: Color(0x1A3D2E1C), blurRadius: 22, offset: Offset(0, 8)),
+  ];
+
+  /// Soft shadow under solid ink surfaces.
+  static const List<BoxShadow> softShadowInk = [
+    BoxShadow(color: Color(0x1F231F1A), blurRadius: 3, offset: Offset(0, 1)),
+    BoxShadow(color: Color(0x33231F1A), blurRadius: 20, offset: Offset(0, 8)),
+  ];
+
+  /// Folio book spine: a strip of ribbon-black binding cloth.
+  static const LinearGradient inkSpine = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [Color(0xFF4A433A), ink, Color(0xFF3A342D)],
+  );
+
+  /// Ribbon ink soaking slightly into the paper fibres around each glyph.
+  static const List<Shadow> inkBleed = [
+    Shadow(color: Color(0x4D231F1A), blurRadius: 0.8),
+  ];
+
+  /// Ink bleed for light glyphs on carbon paper.
+  static const List<Shadow> inkBleedLight = [
+    Shadow(color: Color(0x40E8E3D6), blurRadius: 0.8),
+  ];
 
   /// Typography styles
-  static TextStyle get poemTitleStyle => GoogleFonts.ebGaramond(
-        fontSize: 26,
-        fontWeight: FontWeight.w600,
-        letterSpacing: 0.5,
-        color: inkPrimary,
-      );
+  static const TextStyle poemTitleStyle = TextStyle(
+    fontFamily: typewriterFamily,
+    fontSize: 20,
+    fontWeight: FontWeight.w700,
+    letterSpacing: 1.0,
+    height: 1.3,
+    color: ink,
+    shadows: inkBleed,
+  );
 
-  static TextStyle get poemAuthorStyle => GoogleFonts.ebGaramond(
-        fontSize: 16,
-        fontStyle: FontStyle.italic,
-        letterSpacing: 0.8,
-        color: inkSecondary,
-      );
+  static const TextStyle poemAuthorStyle = TextStyle(
+    fontFamily: typewriterFamily,
+    fontSize: 13,
+    letterSpacing: 1.2,
+    color: inkSecondary,
+  );
 
-  static TextStyle get verseStyle => GoogleFonts.ebGaramond(
-        fontSize: 20,
-        height: 1.8,
-        letterSpacing: 0.2,
-      );
+  static const TextStyle verseStyle = TextStyle(
+    fontFamily: typewriterFamily,
+    fontSize: 17,
+    height: 1.75,
+  );
 
-  static TextStyle get headerDateStyle => GoogleFonts.cinzel(
-        fontSize: 13,
-        fontWeight: FontWeight.w600,
-        letterSpacing: 3.0,
-        color: antiqueGold,
-      );
+  static const TextStyle headerDateStyle = TextStyle(
+    fontFamily: typewriterFamily,
+    fontSize: 12,
+    letterSpacing: 3.0,
+    color: ink,
+  );
 
-  static TextStyle get labelStyle => GoogleFonts.inter(
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        letterSpacing: 0.5,
-      );
+  static const TextStyle labelStyle = TextStyle(
+    fontFamily: typewriterFamily,
+    fontSize: 11,
+    letterSpacing: 1.5,
+    color: inkSecondary,
+  );
+
+  /// Uppercase micro-caption for section headers and badges.
+  static const TextStyle captionStyle = TextStyle(
+    fontFamily: typewriterFamily,
+    fontSize: 10,
+    letterSpacing: 2.5,
+    color: inkSecondary,
+  );
 
   /// Theme Configuration
   static ThemeData get lightTheme {
     return ThemeData(
+      useMaterial3: true,
       brightness: Brightness.light,
-      scaffoldBackgroundColor: parchmentLight,
+      fontFamily: typewriterFamily,
+      scaffoldBackgroundColor: paperBase,
       colorScheme: const ColorScheme.light(
-        primary: inkPrimary,
-        secondary: antiqueGold,
-        surface: parchmentSurface,
-        error: inkMistake,
+        primary: ink,
+        onPrimary: paperHighlight,
+        secondary: inkSecondary,
+        onSecondary: paperHighlight,
+        surface: paperHighlight,
+        onSurface: ink,
+        error: inkRed,
+        outline: hairline,
+        surfaceTint: Colors.transparent,
       ),
-      textTheme: GoogleFonts.ebGaramondTextTheme().apply(
-        bodyColor: inkPrimary,
-        displayColor: inkPrimary,
-      ),
-      dividerColor: const Color(0x1F1A1816),
+      dividerColor: hairline,
+      iconTheme: const IconThemeData(color: ink, size: 22),
       appBarTheme: const AppBarTheme(
-        backgroundColor: parchmentLight,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: inkPrimary),
+        scrolledUnderElevation: 0,
+        centerTitle: true,
+        foregroundColor: ink,
+        iconTheme: IconThemeData(color: ink, size: 22),
+        titleTextStyle: headerDateStyle,
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+      ),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: ink,
+        linearTrackColor: hairline,
+      ),
+      listTileTheme: const ListTileThemeData(
+        iconColor: ink,
+        titleTextStyle: TextStyle(fontFamily: typewriterFamily, fontSize: 14, color: ink),
+        subtitleTextStyle: TextStyle(
+          fontFamily: typewriterFamily,
+          fontSize: 11,
+          height: 1.4,
+          color: inkSecondary,
+        ),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: const WidgetStatePropertyAll(paperHighlight),
+        trackColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected) ? ink : paperShade,
+        ),
+        trackOutlineColor: const WidgetStatePropertyAll(Colors.transparent),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: inkSecondary,
+          textStyle: const TextStyle(fontFamily: typewriterFamily, fontSize: 11, letterSpacing: 1.0),
+        ),
+      ),
+      snackBarTheme: const SnackBarThemeData(
+        backgroundColor: ink,
+        behavior: SnackBarBehavior.floating,
+        contentTextStyle: TextStyle(
+          fontFamily: typewriterFamily,
+          fontSize: 12,
+          letterSpacing: 0.5,
+          color: paperHighlight,
+        ),
+      ),
+      textSelectionTheme: const TextSelectionThemeData(
+        cursorColor: ink,
+        selectionColor: Color(0x33231F1A),
+      ),
+      tooltipTheme: const TooltipThemeData(
+        decoration: BoxDecoration(color: ink, borderRadius: BorderRadius.all(Radius.circular(8))),
+        textStyle: TextStyle(fontFamily: typewriterFamily, fontSize: 11, color: paperHighlight),
       ),
     );
   }
 
   static ThemeData get darkTheme {
     return ThemeData(
+      useMaterial3: true,
       brightness: Brightness.dark,
-      scaffoldBackgroundColor: darkWood,
+      fontFamily: typewriterFamily,
+      scaffoldBackgroundColor: carbonBase,
       colorScheme: const ColorScheme.dark(
-        primary: darkInkPrimary,
-        secondary: antiqueGold,
-        surface: darkSurface,
-        error: Color(0xFFD64545),
+        primary: carbonInk,
+        onPrimary: carbonDeep,
+        secondary: carbonInkSecondary,
+        surface: carbonBase,
+        onSurface: carbonInk,
+        error: Color(0xFFD06A5E),
+        outline: Color(0x26E8E3D6),
+        surfaceTint: Colors.transparent,
       ),
-      textTheme: GoogleFonts.ebGaramondTextTheme(ThemeData.dark().textTheme).apply(
-        bodyColor: darkInkPrimary,
-        displayColor: darkInkPrimary,
-      ),
-      dividerColor: const Color(0x1FE6DFD5),
+      dividerColor: const Color(0x26E8E3D6),
+      iconTheme: const IconThemeData(color: carbonInk, size: 22),
       appBarTheme: const AppBarTheme(
-        backgroundColor: darkWood,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: darkInkPrimary),
+        scrolledUnderElevation: 0,
+        centerTitle: true,
+        foregroundColor: carbonInk,
+        iconTheme: IconThemeData(color: carbonInk, size: 22),
+        titleTextStyle: TextStyle(
+          fontFamily: typewriterFamily,
+          fontSize: 12,
+          letterSpacing: 3.0,
+          color: carbonInk,
+        ),
+        systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
     );
   }

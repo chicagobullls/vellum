@@ -5,8 +5,9 @@ import '../../core/utils/roman_numerals.dart';
 import '../../data/models/poem.dart';
 import '../../data/models/user_folio_entry.dart';
 import '../../data/repositories/poem_repository.dart';
-import '../widgets/parchment_background.dart';
-import '../widgets/wax_seal_widget.dart';
+import '../widgets/seal_widget.dart';
+import '../widgets/soft_surface.dart';
+import '../widgets/typewriter_paper_background.dart';
 import 'ghost_typing_widget.dart';
 import '../memory_practice/cloze_practice_screen.dart';
 import '../folio_book/folio_screen.dart';
@@ -89,7 +90,9 @@ class _DailySanctuaryScreenState extends State<DailySanctuaryScreen> {
   Widget build(BuildContext context) {
     if (_todayPoem == null) {
       return const Scaffold(
-        body: Center(child: CircularProgressIndicator(color: VellumTheme.antiqueGold)),
+        body: TypewriterPaperBackground(
+          child: Center(child: CircularProgressIndicator(strokeWidth: 1.5)),
+        ),
       );
     }
 
@@ -102,191 +105,174 @@ class _DailySanctuaryScreenState extends State<DailySanctuaryScreen> {
     final wpm = elapsedSec > 2 ? ((_charIndex / 5) / (elapsedSec / 60)).round() : 0;
 
     return Scaffold(
-      body: ParchmentBackground(
-        child: Column(
+      body: TypewriterPaperBackground(
+        child: Stack(
           children: [
-            // Top App Bar: Navigation, Roman Date & Settings
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.menu_book_outlined, color: VellumTheme.inkPrimary),
-                        tooltip: 'Мой Фолиант (Folio)',
-                        onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => FolioScreen(repository: widget.repository),
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.settings_outlined, color: VellumTheme.inkPrimary, size: 20),
-                        tooltip: 'Настройки звука и ритуала',
-                        onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const SettingsScreen(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
+            Column(
+              children: [
+                _buildTopBar(poem),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: InkProgressBar(value: progress),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 22, 24, 4),
+                  child: Column(
                     children: [
                       Text(
-                        RomanNumerals.formatDateRoman(DateTime.now()),
-                        style: VellumTheme.headerDateStyle,
+                        poem.title.toUpperCase(),
+                        style: VellumTheme.poemTitleStyle,
+                        textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 2),
-                      const Text(
-                        'СТИХ ДНЯ · SANCTUARY',
-                        style: TextStyle(
-                          fontSize: 10,
-                          letterSpacing: 2,
-                          color: VellumTheme.inkSecondary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      TextButton(
-                        style: TextButton.styleFrom(
-                          minimumSize: const Size(36, 32),
-                          padding: const EdgeInsets.symmetric(horizontal: 6),
-                        ),
-                        onPressed: _toggleLanguage,
-                        child: Text(
-                          _selectedLanguage.toUpperCase(),
-                          style: const TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: VellumTheme.antiqueGold,
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.share_outlined, color: VellumTheme.inkPrimary),
-                        tooltip: 'Экспорт открытки (Story)',
-                        onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => StoryStudioScreen(poem: poem),
-                          ),
-                        ),
+                      const SizedBox(height: 6),
+                      Text('${poem.author}, ${poem.year}', style: VellumTheme.poemAuthorStyle),
+                      const SizedBox(height: 12),
+                      SoftSurface(
+                        radius: null,
+                        elevated: false,
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                        child: Text(poem.meter.toUpperCase(), style: VellumTheme.captionStyle.copyWith(fontSize: 9)),
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
+                ),
 
-            LinearProgressIndicator(
-              value: progress,
-              backgroundColor: VellumTheme.antiqueGoldMuted,
-              valueColor: const AlwaysStoppedAnimation<Color>(VellumTheme.antiqueGold),
-              minHeight: 2.5,
-            ),
+                // The verse scrolls up past the floating stats capsule.
+                Expanded(
+                  child: GhostTypingWidget(
+                    key: ValueKey('${poem.id}_$_selectedLanguage'),
+                    poem: poem,
+                    bottomInset: _isCompleted ? 0 : 72,
+                    onProgress: _onProgress,
+                    onCompleted: _onCompleted,
+                  ),
+                ),
 
-            Padding(
-              padding: const EdgeInsets.only(top: 14, bottom: 6),
-              child: Column(
-                children: [
-                  Text(poem.title, style: VellumTheme.poemTitleStyle, textAlign: TextAlign.center),
-                  const SizedBox(height: 3),
-                  Text('${poem.author}, ${poem.year}', style: VellumTheme.poemAuthorStyle),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: VellumTheme.antiqueGold.withOpacity(0.5)),
-                      borderRadius: BorderRadius.circular(12),
+                if (_isCompleted)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+                    child: SoftSurface(
+                      radius: 24,
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          const SealWidget(size: 72, monogram: 'V'),
+                          const SizedBox(height: 12),
+                          const Text('ЗАПЕЧАТАНО В ПАМЯТИ', style: VellumTheme.captionStyle),
+                          const SizedBox(height: 16),
+                          SoftButton(
+                            icon: Icons.psychology_outlined,
+                            label: 'ЗАКРЕПИТЬ В ТРЕНАЖЁРЕ',
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ClozePracticeScreen(
+                                  poem: poem,
+                                  repository: widget.repository,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                  ),
+              ],
+            ),
+
+            if (!_isCompleted)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 16,
+                child: Center(
+                  child: SoftSurface(
+                    radius: null,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     child: Text(
-                      poem.meter.toUpperCase(),
-                      style: const TextStyle(
-                        fontSize: 9,
-                        letterSpacing: 1.5,
-                        color: VellumTheme.antiqueGold,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      'ТОЧНОСТЬ $accuracy%   ·   $wpm WPM   ·   СТРОК ${poem.totalLines}',
+                      textAlign: TextAlign.center,
+                      style: VellumTheme.labelStyle,
                     ),
                   ),
-                ],
-              ),
-            ),
-
-            Expanded(
-              child: GhostTypingWidget(
-                key: ValueKey('${poem.id}_$_selectedLanguage'),
-                poem: poem,
-                onProgress: _onProgress,
-                onCompleted: _onCompleted,
-              ),
-            ),
-
-            if (_isCompleted) ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                child: Column(
-                  children: [
-                    const WaxSealWidget(size: 78, monogram: 'V'),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'ЗАПЕЧАТАНО В ПАМЯТИ',
-                      style: TextStyle(
-                        fontSize: 11,
-                        letterSpacing: 2.5,
-                        fontWeight: FontWeight.bold,
-                        color: VellumTheme.waxCrimson,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: VellumTheme.inkPrimary,
-                        foregroundColor: VellumTheme.parchmentLight,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                      icon: const Icon(Icons.psychology_outlined, size: 18),
-                      label: const Text('ЗАКРЕПИТЬ ПАМЯТЬ В ТРЕНАЖЕРЕ (CLOZE)'),
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ClozePracticeScreen(
-                            poem: poem,
-                            repository: widget.repository,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
               ),
-            ] else ...[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Точность: $accuracy%', style: VellumTheme.labelStyle),
-                    const SizedBox(width: 20),
-                    Text('Скорость: $wpm WPM', style: VellumTheme.labelStyle),
-                    const SizedBox(width: 20),
-                    Text('Строк: ${poem.totalLines}', style: VellumTheme.labelStyle),
-                  ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Top bar: soft toolbars for navigation and actions around the Roman date.
+  Widget _buildTopBar(Poem poem) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 6, 16, 14),
+      child: Row(
+        children: [
+          SoftToolbar(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.menu_book_outlined, size: 20),
+                tooltip: 'Мой Фолиант (Folio)',
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => FolioScreen(repository: widget.repository),
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.tune, size: 20),
+                tooltip: 'Настройки звука и ритуала',
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const SettingsScreen(),
+                  ),
                 ),
               ),
             ],
-          ],
-        ),
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    RomanNumerals.formatDateRoman(DateTime.now()),
+                    style: VellumTheme.headerDateStyle,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                const Text('СТИХ ДНЯ', style: VellumTheme.captionStyle),
+              ],
+            ),
+          ),
+          SoftToolbar(
+            children: [
+              IconButton(
+                icon: Text(
+                  _selectedLanguage.toUpperCase(),
+                  style: VellumTheme.labelStyle.copyWith(color: VellumTheme.ink),
+                ),
+                tooltip: 'Язык стиха',
+                onPressed: _toggleLanguage,
+              ),
+              IconButton(
+                icon: const Icon(Icons.ios_share, size: 20),
+                tooltip: 'Экспорт открытки (Story)',
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => StoryStudioScreen(poem: poem),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

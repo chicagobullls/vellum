@@ -1,5 +1,5 @@
 name: vellum
-description: "Vellum — Type the verse. Own the memory. Kinetic poetry typing and memorization ritual in Dark Academia aesthetics."
+description: "Vellum — Type the verse. Own the memory. Kinetic poetry typing and memorization ritual on typewriter paper with liquid glass."
 publish_to: "none"
 version: 1.0.0+1
 
@@ -11,7 +11,6 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.5.1
-  google_fonts: ^6.2.1
   shared_preferences: ^2.2.3
   audioplayers: ^6.0.0
   share_plus: ^9.0.0
@@ -31,3 +30,11 @@ flutter:
     - assets/data/
     - assets/fonts/
     - assets/images/
+
+  fonts:
+    # TT2020 by Fredrick R. Brennan (SIL OFL 1.1), subset to Latin + Cyrillic.
+    - family: TT2020
+      fonts:
+        - asset: assets/fonts/TT2020-StyleE.ttf
+        - asset: assets/fonts/TT2020-StyleB.ttf
+          weight: 700

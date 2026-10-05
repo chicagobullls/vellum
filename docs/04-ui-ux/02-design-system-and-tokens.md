@@ -3,117 +3,112 @@ project: "vellum"
 phase: 4
 doc_type: "design-system"
 status: "approved"
-last_updated: "2026-09-29"
+last_updated: "2026-10-05"
 tags:
   - airam
   - ui-ux
   - design-system
-  - dark-academia
+  - typewriter-paper
+  - soft-minimalism
   - typography
 ---
 
-# 🎨 Дизайн-система и токены: Vellum (Victorian Modernity)
+# 🎨 Дизайн-система и токены: Vellum (Typewriter Paper & Soft Minimalism)
 
-> **Философия визуального стиля:**  
-> Сочетание очарования **викторианского книжного кабинета (Dark Academia)** и **скандинавского минимализма Apple**. Тактильное ощущение плотной верже-бумаги, глубоких типографских чернил, золотого тиснения и ультра-чистых отступов без визуального мусора.
+> **Философия визуального стиля:**
+> Светло-бежевый **потёртый лист бумаги для печатной машинки**, на котором стих печатается **чернилами ленты**, и минималистичные элементы управления — **ровные светлые поверхности с мягкими тенями**. Шрифт и тема машинки взяты из референсов `assets/designref/` (шрифт «Печатная машинка» B52). Никаких ярких акцентов: иерархию задают плотность чернил, мягкие тени и отступы.
 
 ---
 
 ## 1. Цветовая палитра и токены (Palette Tokens)
 
-### Режим «Дневной пергамент» (Parchment Light — Default)
-| Токен | HEX | HSL | Назначение |
-| :--- | :--- | :--- | :--- |
-| `parchment-bg` | `#FBF8F1` | `hsl(41, 56%, 96%)` | Основной фон экрана (теплая слоновая кость, мягкая для глаз) |
-| `parchment-surface` | `#F4EFE6` | `hsl(38, 35%, 93%)` | Карточки книг, подложка набора, всплывающие листы |
-| `ink-primary` | `#1A1816` | `hsl(30, 8%, 10%)` | Текст набранных стихов (глубокий угольно-чернильный оттенок) |
-| `ink-ghost` | `rgba(26,24,22, 0.22)` | — | Призрачный текст в режиме Ghost Typing |
-| `antique-gold` | `#C29B38` | `hsl(43, 55%, 49%)` | Золотые корешки, бейджи Pro, активные индикаторы уровней |
-| `wax-burgundy` | `#842D2D` | `hsl(0, 49%, 35%)` | Цвет сургучной печати мастерства и микро-подсветки ошибок |
-| `parchment-border` | `#E8DFD1` | `hsl(37, 30%, 86%)` | Тончайшие разделители и рамки (1px) |
+### Режим «Бумага для машинки» (Typewriter Paper — Default, светлый беж)
+| Токен (`VellumTheme`) | HEX | Назначение |
+| :--- | :--- | :--- |
+| `paperHighlight` | `#F8F3EA` | Освещённая зона листа, текст на чернильных поверхностях |
+| `paperSurface` | `#FCFAF6` | Карточки и элементы управления над листом |
+| `paperBase` | `#F0E8DA` | Базовый светло-бежевый тон, фон Scaffold |
+| `paperShade` | `#E2D5C0` | Потемневшие края листа, выключенный трек свитча |
+| `ink` | `#231F1A` | Чёрная лента: набранный текст, иконки, primary |
+| `inkSecondary` | `#6E6555` | Выцветшая лента: подписи, второстепенный текст |
+| `inkGhost` | `rgba(35,31,26, 0.22)` | Призрачный текст Ghost Typing (FR-02, TASK-105) |
+| `inkRed` | `#A3362B` | Красная половина двухцветной ленты — только ошибки |
+| `hairline` | `rgba(35,31,26, 0.15)` | Разделители и треки 1px |
 
-### Режим «Ночная библиотека» (Dark Academia — Night)
-| Токен | HEX | HSL | Назначение |
-| :--- | :--- | :--- | :--- |
-| `dark-bg` | `#151413` | `hsl(30, 4%, 8%)` | Фон (оттенок старинного кожаного переплета) |
-| `dark-surface` | `#201E1C` | `hsl(30, 7%, 12%)` | Поверхности карточек и панели настроек |
-| `dark-ink-primary` | `#E8E2D8` | `hsl(38, 25%, 88%)` | Читаемый мягкий антиквенный текст |
-| `dark-ink-ghost` | `rgba(232,226,216, 0.20)` | — | Призрачный текст в ночной теме |
-| `dark-gold-glow` | `#D4AF37` | `hsl(46, 65%, 52%)` | Золотое тиснение с мягким свечением |
+### Режим «Копирка» (Carbon Copy — Dark)
+| Токен | HEX | Назначение |
+| :--- | :--- | :--- |
+| `carbonHighlight` | `#2F323A` | Освещённая зона копирки |
+| `carbonBase` | `#23252C` | Фон |
+| `carbonDeep` | `#16171C` | Края листа |
+| `carbonInk` | `#E8E3D6` | Основной текст |
+| `carbonInkSecondary` | `#A29C8F` | Второстепенный текст |
+| `carbonGhost` | `rgba(232,227,214, 0.22)` | Призрачный текст |
 
 ---
 
 ## 2. Типографика (Typography System)
 
-В основе типографики лежит контраст между благородной классической антиквой (для стихов) и современным гротеском (для служебных дат и навигации):
+Единая гарнитура — **TT2020** (Fredrick R. Brennan, SIL OFL 1.1): гиперреалистичная печатная машинка с кириллицей, ближайший открытый аналог B52 из референсов. Шрифт встроен в бандл (`assets/fonts/`, подмножество Latin + Cyrillic ≈ 1.4 МБ на начертание), без сетевой загрузки — соответствует offline-first (ADR-0002). Контекстные альтернаты (`calt`) дают естественную неровность оттиска.
 
-- **Поэтическая антиква (Poetry Serif):** **`EB Garamond`** (или `Cormorant Garamond`). Классические пропорции ренессансной гарнитуры XVI века Клода Гарамона.
-- **Интерфейсный гротеск (Modern Sans):** **`SF Pro Display / Text`** (Apple нативный шрифт с увеличенным трекингом `+0.5px` для лаконичности).
+- `TT2020 Style E` → `FontWeight.w400` (основной оттиск)
+- `TT2020 Style B` → `FontWeight.w700` (жирный оттиск: заголовки, монограммы)
 
-| Стиль типографики | Гарнитура | Размер | Вес | Line Height | Letter Spacing |
-| :--- | :--- | :--- | :--- | :---: | :---: |
-| **Roman Date (Дата дня)** | SF Pro Text | 12px | 500 (Medium) | 1.2 | `+2.0px (All Caps)` |
-| **Poem Title (Название)** | EB Garamond | 24px | 600 (SemiBold) | 1.3 | `-0.2px` |
-| **Poet Author (Автор)** | SF Pro Text | 13px | 400 (Regular) | 1.4 | `+1.0px (Uppercase)` |
-| **Verse Line (Строфа)** | EB Garamond | 21px | 400 (Regular) | 1.65 | `0.0px` |
-| **Folio Counter (Счетчик)** | EB Garamond Italic| 15px | 400 (Italic) | 1.4 | `0.0px` |
-| **Button / Caption** | SF Pro Text | 14px | 600 (SemiBold) | 1.2 | `+0.8px` |
+| Стиль (`VellumTheme`) | Размер | Вес | Line Height | Letter Spacing | Примечание |
+| :--- | :--- | :--- | :---: | :---: | :--- |
+| `headerDateStyle` (Roman Date) | 12px | 400 | — | `+3.0px` | |
+| `poemTitleStyle` | 20px | 700 | 1.3 | `+1.0px` | UPPERCASE, растекание чернил |
+| `poemAuthorStyle` | 13px | 400 | — | `+1.2px` | |
+| `verseStyle` | 17px | 400 | 1.75 | `0` | ≈37 знаков в строке на 393pt |
+| `labelStyle` | 11px | 400 | — | `+1.5px` | Статистика, бейджи |
+| `captionStyle` | 10px | 400 | — | `+2.5px` | UPPERCASE заголовки секций |
+
+**Растекание чернил (`inkBleed`):** мягкий ореол `rgba(35,31,26,0.3)` с `blurRadius 0.8` вокруг крупных глифов — чернила ленты чуть впитываются в волокна бумаги. На копирке — `inkBleedLight`. На мелком тексте не применяется.
+
+**Ghost Typing:** набранные глифы — `ink` + растекание; текущий — `ink` с подчёркиванием 2px (направляющая каретки); оставшиеся — `inkGhost`, как карандашная разметка. Вес шрифта при наборе не меняется, чтобы строка не «прыгала».
 
 ---
 
-## 3. Сетка, формы и кинестетические токены
+## 3. Поверхности, мягкие тени и кинестетические токены
 
-- **Сетка и ритм:** 8-пиксельный шаг (`8px`, `16px`, `24px`, `32px`, `48px`).
-- **Скругления (Border Radius):**
-  - Кнопки действий: `12px` (мягкий органический силуэт).
-  - Карточки книг: `16px` с внутренней рамкой `1px solid var(--parchment-border)`.
-  - Сургучная печать: `50%` (круг `44x44px` с фактурным неровным тиснением).
+- **Фон (`TypewriterPaperBackground`):** процедурный потёртый лист — светло-бежевый тон с освещением сверху слева, неравномерное старение, засаленные углы, заломы, следы высохших капель, потёртости с поднятыми волокнами, мягкие «лисьи» пятна (без чётких точек — чтобы не читались как пунктуация в стихе), волокна, зерно и затемнение к краям. `isDark` — копирка (без пятен и следов).
+  - **Производительность:** лист рендерится один раз в `ui.Image` (`Picture.toImageSync`, масштаб ≤2x) и берётся из LRU-кэша на 6 листов; каждый кадр рисует одну текстуру — Impeller не кэширует векторные картинки и иначе переигрывал бы тысячи штрихов в каждом кадре анимации.
+  - **Стабильность:** полноэкранный лист считается по размеру экрана (`MediaQuery.sizeOf`), а не по области тела Scaffold, поэтому при появлении клавиатуры текстура не смещается. Фиксированный seed — лист одинаков между запусками.
+- **Мягкие поверхности (`SoftSurface`):** ровная заливка без бликов, обводок и размытия + мягкая тёплая тень (`softShadow`: контактная `rgba(61,46,28,0.06)` blur 3 + рассеянная `rgba(61,46,28,0.10)` blur 22, сдвиг 8px). Тона: `paper` (`paperSurface`) и `ink` (сплошные чернила, `softShadowInk`) — для primary-действий и акцентов. `elevated: false` — плоский элемент на листе с тонкой обводкой `hairline` вместо тени (бейдж размера, поиск, невыбранные варианты). `radius: null` — капсула.
+- **Компоненты:** `SoftButton` (капсула), `SoftIconButton` (круг), `SoftToolbar` (группа кнопок), `SoftSegmentedControl` (светлый ползунок с мягкой тенью скользит по утопленной дорожке, `easeOutCubic` 280 мс), `SoftDialog` + `showSoftDialog` (вуаль `rgba(35,31,26,0.2)`), `VellumAppBar` (прозрачная шапка с круглой кнопкой «назад»), `InkProgressBar` (линия 3px).
+- **Печать мастерства (`SealWidget`):** круглая бумажная печать с мягкой тенью, тонким внутренним кольцом и машинописной монограммой. Отделка `paper` (уровни I–II) и `ink` (уровни III–IV, хранимое значение `waxSealColor = 'antique_gold'`).
+- **Открытка (Story Studio):** настоящий лист (скругление 3px, мягкая тень) — бумага или копирка.
+- **Сетка и ритм:** шаг 8px (`8`, `16`, `24`, `32`, `48`); боковые поля экранов 16–24px.
+- **Скругления:** капсулы для кнопок, тулбаров, бейджей и поиска; карточки `18px`; диалоги и панель завершения `24px`; лист открытки `3px`.
 - **Кинестетические токены (Акустика + Taptic):**
   - `token_key_press`: длительность PCM 12мс, CoreHaptics transient `intensity=0.5, sharpness=0.6`.
   - `token_line_complete`: короткий механический щелчок возврата.
   - `token_stanza_bell`: 350мс звонок колокольчика печатной машинки, Taptic success notification.
   - `token_error_shake`: анимация сдвига `dx = [-3, 3, -2, 2, 0]` px за 110 мс, глухой отклик.
+  - `token_soft_press`: поверхность оседает до `scale 0.97` за 140 мс (`easeOut`), без пружины.
 
 ---
 
-## 4. Исполняемые токены темы во Flutter (`lib/core/theme/vellum_theme.dart`)
+## 4. Исполняемые токены темы во Flutter
+
+Источник правды — `lib/core/theme/vellum_theme.dart` (`VellumTheme`), компоненты — `lib/presentation/widgets/` (`typewriter_paper_background.dart`, `soft_surface.dart`, `seal_widget.dart`, `vellum_app_bar.dart`).
 
 ```dart
-import 'package:flutter/material.dart';
+class VellumTheme {
+  static const String typewriterFamily = 'TT2020';
 
-class VellumColors {
-  // Light Parchment
-  static const Color parchmentBg = Color(0xFFFBF8F1);
-  static const Color parchmentSurface = Color(0xFFF4EFE6);
-  static const Color inkPrimary = Color(0xFF1A1816);
-  static const Color inkGhost = Color(0x381A1816); // 22% opacity
-  static const Color antiqueGold = Color(0xFFC29B38);
-  static const Color waxBurgundy = Color(0xFF842D2D);
-  static const Color parchmentBorder = Color(0xFFE8DFD1);
+  static const Color paperBase = Color(0xFFF3EAD6);
+  static const Color ink = Color(0xFF231F1A);
+  static const Color inkGhost = Color(0x38231F1A); // ribbon ink @ 22%
 
-  // Dark Academia
-  static const Color darkBg = Color(0xFF151413);
-  static const Color darkSurface = Color(0xFF201E1C);
-  static const Color darkInkPrimary = Color(0xFFE8E2D8);
-  static const Color darkInkGhost = Color(0x33E8E2D8); // 20% opacity
-  static const Color darkGold = Color(0xFFD4AF37);
-}
+  static const List<Shadow> inkBleed = [
+    Shadow(color: Color(0x4D231F1A), blurRadius: 0.8),
+  ];
 
-class VellumTypography {
-  static const TextStyle romanDate = TextStyle(
-    fontFamily: '.SF Pro Text',
-    fontSize: 12,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 2.0,
-    color: Color(0xFF8A8275),
-  );
-
-  static const TextStyle verseText = TextStyle(
-    fontFamily: 'EBGaramond',
-    fontSize: 21,
-    height: 1.65,
-    fontWeight: FontWeight.normal,
-    color: VellumColors.inkPrimary,
+  static const TextStyle verseStyle = TextStyle(
+    fontFamily: typewriterFamily,
+    fontSize: 17,
+    height: 1.75,
   );
 }
 ```

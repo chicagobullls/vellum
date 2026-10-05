@@ -4,11 +4,13 @@ import 'package:flutter/rendering.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../core/theme/vellum_theme.dart';
 import '../../data/models/poem.dart';
-import '../widgets/parchment_background.dart';
-import '../widgets/wax_seal_widget.dart';
+import '../widgets/vellum_app_bar.dart';
+import '../widgets/seal_widget.dart';
+import '../widgets/soft_surface.dart';
+import '../widgets/typewriter_paper_background.dart';
 
 /// Story Card Studio (SCR-04): Offscreen high-res PNG export (9:16 and 1:1)
-/// with Parchment / Dark Academia Charcoal theme switch and native iOS Share Sheet.
+/// with Typewriter Paper / Carbon Copy (charcoal) texture switch and native iOS Share Sheet.
 class StoryStudioScreen extends StatefulWidget {
   final Poem poem;
   const StoryStudioScreen({super.key, required this.poem});
@@ -21,7 +23,7 @@ class _StoryStudioScreenState extends State<StoryStudioScreen> {
   final GlobalKey _cardRepaintKey = GlobalKey();
 
   bool _isStoryFormat = true; // true = 9:16 Story, false = 1:1 Square
-  bool _isCharcoalTheme = false; // false = Parchment Light, true = Dark Charcoal
+  bool _isCharcoalTheme = false; // false = Typewriter Paper, true = Carbon Copy (charcoal)
   bool _isExporting = false;
 
   /// High-resolution image capture via RenderRepaintBoundary
@@ -64,142 +66,128 @@ class _StoryStudioScreenState extends State<StoryStudioScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cardBg = _isCharcoalTheme ? VellumTheme.darkWood : VellumTheme.parchmentSurface;
-    final textColor = _isCharcoalTheme ? VellumTheme.darkInkPrimary : VellumTheme.inkPrimary;
-    final subColor = _isCharcoalTheme ? VellumTheme.darkInkSecondary : VellumTheme.inkSecondary;
+    final textColor = _isCharcoalTheme ? VellumTheme.carbonInk : VellumTheme.ink;
+    final subColor = _isCharcoalTheme ? VellumTheme.carbonInkSecondary : VellumTheme.inkSecondary;
+    final bleed = _isCharcoalTheme ? VellumTheme.inkBleedLight : VellumTheme.inkBleed;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('ОТКРЫТКА ДЛЯ СТОРИС', style: VellumTheme.headerDateStyle),
-        centerTitle: true,
+      extendBodyBehindAppBar: true,
+      appBar: VellumAppBar(
+        title: 'ОТКРЫТКА ДЛЯ СТОРИС',
+        actions: [
+          SoftIconButton(
+            icon: _isCharcoalTheme ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
+            tooltip: 'Сменить фактуру: Бумага / Копирка',
+            onPressed: () => setState(() => _isCharcoalTheme = !_isCharcoalTheme),
+          ),
+        ],
       ),
-      body: ParchmentBackground(
+      body: TypewriterPaperBackground(
         child: Column(
           children: [
-            // Controls: Aspect Ratio and Theme Toggles
+            // Aspect Ratio Toggle
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // 9:16 vs 1:1
-                  ChoiceChip(
-                    label: const Text('9:16 Story'),
-                    selected: _isStoryFormat,
-                    selectedColor: VellumTheme.inkPrimary,
-                    labelStyle: TextStyle(
-                      color: _isStoryFormat ? VellumTheme.parchmentLight : VellumTheme.inkPrimary,
-                    ),
-                    onSelected: (val) => setState(() => _isStoryFormat = true),
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+              child: SoftSegmentedControl(
+                count: 2,
+                selectedIndex: _isStoryFormat ? 0 : 1,
+                onSelected: (i) => setState(() => _isStoryFormat = i == 0),
+                itemBuilder: (context, i, isSelected) => Text(
+                  i == 0 ? '9:16 STORY' : '1:1 SQUARE',
+                  style: VellumTheme.labelStyle.copyWith(
+                    color: isSelected ? VellumTheme.ink : VellumTheme.inkSecondary,
                   ),
-                  const SizedBox(width: 8),
-                  ChoiceChip(
-                    label: const Text('1:1 Square'),
-                    selected: !_isStoryFormat,
-                    selectedColor: VellumTheme.inkPrimary,
-                    labelStyle: TextStyle(
-                      color: !_isStoryFormat ? VellumTheme.parchmentLight : VellumTheme.inkPrimary,
-                    ),
-                    onSelected: (val) => setState(() => _isStoryFormat = false),
-                  ),
-                  const SizedBox(width: 16),
-                  // Texture Toggle
-                  IconButton(
-                    icon: Icon(_isCharcoalTheme ? Icons.dark_mode : Icons.light_mode, color: VellumTheme.antiqueGold),
-                    tooltip: 'Сменить фактуру: Пергамент / Уголь',
-                    onPressed: () => setState(() => _isCharcoalTheme = !_isCharcoalTheme),
-                  ),
-                ],
+                ),
               ),
             ),
 
-            // Card Canvas Container wrapped in RepaintBoundary
+            // Card Canvas sized to fit the free space; RepaintBoundary wraps exactly the card
             Expanded(
-              child: Center(
-                child: SingleChildScrollView(
-                  child: RepaintBoundary(
-                    key: _cardRepaintKey,
-                    child: AspectRatio(
-                      aspectRatio: _isStoryFormat ? (9 / 16) : 1.0,
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                        padding: const EdgeInsets.all(28),
-                        decoration: BoxDecoration(
-                          color: cardBg,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: VellumTheme.antiqueGold, width: 1.5),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 20,
-                              offset: const Offset(0, 10),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              children: [
-                                const Text(
-                                  'VELLUM · SANCTUARY',
-                                  style: TextStyle(
-                                    fontFamily: 'Cinzel',
-                                    fontSize: 10,
-                                    letterSpacing: 3,
-                                    color: VellumTheme.antiqueGold,
-                                    fontWeight: FontWeight.bold,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                child: Center(
+                  child: AspectRatio(
+                    aspectRatio: _isStoryFormat ? (9 / 16) : 1.0,
+                    child: DecoratedBox(
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(3)),
+                        boxShadow: [
+                          BoxShadow(color: Color(0x335A4630), blurRadius: 18, offset: Offset(0, 8)),
+                          BoxShadow(color: Color(0x1A5A4630), blurRadius: 2, offset: Offset(0, 1)),
+                        ],
+                      ),
+                      child: RepaintBoundary(
+                        key: _cardRepaintKey,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(3),
+                          child: TypewriterPaperBackground(
+                            isDark: _isCharcoalTheme,
+                            safeArea: false,
+                            child: Padding(
+                              padding: const EdgeInsets.all(26),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Text(
+                                        'VELLUM · SANCTUARY',
+                                        style: VellumTheme.captionStyle.copyWith(color: subColor),
+                                      ),
+                                      const SizedBox(height: 14),
+                                      Text(
+                                        widget.poem.title.toUpperCase(),
+                                        textAlign: TextAlign.center,
+                                        style: VellumTheme.poemTitleStyle.copyWith(
+                                          fontSize: 18,
+                                          color: textColor,
+                                          shadows: bleed,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        '${widget.poem.author}, ${widget.poem.year}',
+                                        style: VellumTheme.poemAuthorStyle.copyWith(fontSize: 12, color: subColor),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  widget.poem.title,
-                                  textAlign: TextAlign.center,
-                                  style: VellumTheme.poemTitleStyle.copyWith(
-                                    fontSize: 22,
-                                    color: textColor,
+                                  Flexible(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 14),
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Text(
+                                          widget.poem.stanzas.isNotEmpty
+                                              ? widget.poem.stanzas.first.join('\n')
+                                              : widget.poem.originalText,
+                                          textAlign: TextAlign.center,
+                                          style: VellumTheme.verseStyle.copyWith(
+                                            fontSize: 14,
+                                            color: textColor,
+                                            shadows: bleed,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '${widget.poem.author}, ${widget.poem.year}',
-                                  style: VellumTheme.poemAuthorStyle.copyWith(
-                                    fontSize: 13,
-                                    color: subColor,
+                                  Column(
+                                    children: [
+                                      SealWidget(
+                                        size: 54,
+                                        monogram: 'V',
+                                        finish: _isCharcoalTheme ? SealFinish.ink : SealFinish.paper,
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        'ЗАПЕЧАТАНО В ПАМЯТИ',
+                                        style: VellumTheme.captionStyle.copyWith(fontSize: 9, color: subColor),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              child: Text(
-                                widget.poem.stanzas.isNotEmpty
-                                    ? widget.poem.stanzas.first.join('\n')
-                                    : widget.poem.originalText,
-                                textAlign: TextAlign.center,
-                                style: VellumTheme.verseStyle.copyWith(
-                                  fontSize: 16,
-                                  color: textColor,
-                                ),
+                                ],
                               ),
                             ),
-                            Column(
-                              children: [
-                                const WaxSealWidget(size: 54, monogram: 'V'),
-                                const SizedBox(height: 8),
-                                const Text(
-                                  'Запечатано в памяти',
-                                  style: TextStyle(
-                                    fontFamily: 'Cinzel',
-                                    fontSize: 10,
-                                    letterSpacing: 2,
-                                    color: VellumTheme.waxCrimson,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
@@ -210,21 +198,11 @@ class _StoryStudioScreenState extends State<StoryStudioScreen> {
 
             // Share Action Button
             Padding(
-              padding: const EdgeInsets.all(20),
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: VellumTheme.inkPrimary,
-                  foregroundColor: VellumTheme.parchmentLight,
-                  minimumSize: const Size.fromHeight(50),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-                icon: _isExporting
-                    ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : const Icon(Icons.ios_share),
-                label: Text(
-                  _isExporting ? 'РЕНДЕРИНГ В HD...' : 'ПОДЕЛИТЬСЯ ОТКРЫТКОЙ',
-                  style: const TextStyle(letterSpacing: 1.2, fontWeight: FontWeight.bold),
-                ),
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+              child: SoftButton(
+                icon: Icons.ios_share,
+                label: _isExporting ? 'РЕНДЕРИНГ В HD...' : 'ПОДЕЛИТЬСЯ ОТКРЫТКОЙ',
+                isLoading: _isExporting,
                 onPressed: _isExporting ? null : _exportAndShareCard,
               ),
             ),
